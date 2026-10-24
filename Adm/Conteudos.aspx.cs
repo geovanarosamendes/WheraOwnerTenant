@@ -50,6 +50,7 @@ public partial class Adm_Conteudos : PaginaTenant
                 using (var stream = fuMidia.PostedFile.InputStream)
                 using (var memory = new MemoryStream()) { stream.CopyTo(memory); var enviada = TenantApi.EnviarMidia(Api, empresa.Id, Path.GetFileName(fuMidia.FileName), fuMidia.PostedFile.ContentType, memory.ToArray()); midiaCaminho = enviada.Caminho; midiaTipo = enviada.Tipo; }
             }
+            if (acao == "Publicar") { MostrarTexto("A publicação depende da aprovação da plataforma. Salve o conteúdo como rascunho e aguarde a validação do Owner."); return; }
             var id = Guid.NewGuid().ToString();
             TenantApi.SalvarConteudo(Api, empresa.Id, id, new { Tipo = ddlTipo.SelectedValue, Acao = acao, Versao = 0, Titulo = txtTitulo.Text.Trim(), Descricao = txtDescricao.Text.Trim(), Condicoes = txtCondicoes.Text.Trim(), Preco = valor, MidiaCaminho = midiaCaminho, MidiaTipo = midiaTipo, Destino = txtDestino.Text.Trim(), DuracaoDias = int.Parse(ddlDuracao.SelectedValue), InicioEm = inicioUtc, FimEm = fimUtc });
             litSucesso.Text = acao == "Publicar" ? "Conteúdo publicado." : "Rascunho salvo."; pnlSucesso.Visible = true; Limpar(); Bind();

@@ -47,11 +47,14 @@ namespace WheraOwnerTenant
         public const string Arquivada = "Arquivada";
         public static string Rotulo(string status)
         {
-            if (status == Rascunho || status == AguardandoValidacao) return "Aguardando aprovação";
+            if (status == Rascunho) return "Rascunho";
+            if (status == AguardandoValidacao) return "Aguardando validação";
+            if (status == AprovadoParaConfiguracao) return "Aprovado para configuração";
             if (status == Publicada) return "Publicada";
             if (status == Suspensa) return "Suspensa";
             if (status == Arquivada) return "Arquivada";
             return "Não informado";
         }
+        public const string AprovadoParaConfiguracao = "AprovadoParaConfiguracao";
     }
 }

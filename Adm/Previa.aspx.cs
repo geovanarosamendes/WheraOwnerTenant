@@ -22,7 +22,7 @@ public partial class Adm_Previa : PaginaTenant
             litDescricao.Text = HttpUtility.HtmlEncode(empresa.Descricao ?? "Descrição ainda não informada.");
             var logo = empresa.Imagens == null ? null : empresa.Imagens.Logo;
             imgLogo.Visible = !string.IsNullOrWhiteSpace(logo);
-            imgLogo.ImageUrl = logo ?? "";
+            imgLogo.ImageUrl = WheraApi.UrlMidia(logo ?? "");
             litCanais.Text = Canais(empresa);
             pnlPrevia.Visible = true;
         }
