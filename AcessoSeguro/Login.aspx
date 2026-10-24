@@ -44,6 +44,15 @@
                 <asp:Button ID="btnEntrar" runat="server" Text="Entrar" CssClass="botao" OnClick="btnEntrar_Click" />
                 <asp:LinkButton ID="btnVoltar" runat="server" CssClass="link-voltar" OnClick="btnVoltar_Click">Usar outra conta</asp:LinkButton>
             </asp:Panel>
+
+            <asp:Panel ID="pnlDefinirSegundaSenha" runat="server" Visible="false" DefaultButton="btnDefinir">
+                <p class="dica">Esta é a primeira entrada do proprietário. Crie uma segunda senha exclusiva para administrar a empresa.</p>
+                <label class="campo"><span>Nova segunda senha</span><asp:TextBox ID="txtNovaSegundaSenha" runat="server" TextMode="Password" MaxLength="128" autocomplete="new-password" /></label>
+                <label class="campo"><span>Confirme a segunda senha</span><asp:TextBox ID="txtConfirmaSegundaSenha" runat="server" TextMode="Password" MaxLength="128" autocomplete="new-password" /></label>
+                <asp:Button ID="btnDefinir" runat="server" Text="Criar senha e entrar" CssClass="botao" OnClick="btnDefinir_Click" />
+                <asp:LinkButton ID="btnVoltarDefinicao" runat="server" CssClass="link-voltar" OnClick="btnVoltar_Click">Usar outra conta</asp:LinkButton>
+            </asp:Panel>
+            <p class="dica"><a href="~/AcessoSeguro/CadastroInicial.aspx">Ainda não tenho vínculo: iniciar cadastro</a></p>
         </div>
     </form>
 </body>

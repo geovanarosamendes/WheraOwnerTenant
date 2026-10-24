@@ -38,7 +38,7 @@ public partial class AcessoSeguro_Login : Page
         LoginResposta resposta;
         try
         {
-            resposta = AutenticacaoTenant.Enviar(email, senha, null);
+            resposta = AutenticacaoTenant.Enviar(email, senha, null, null);
         }
         catch (WheraApiException ex)
         {
@@ -46,10 +46,10 @@ public partial class AcessoSeguro_Login : Page
             return;
         }
 
-        if (resposta != null && resposta.Etapa == AutenticacaoTenant.EtapaSegundaSenha)
+        if (resposta != null && (resposta.Etapa == AutenticacaoTenant.EtapaSegundaSenha || resposta.Etapa == AutenticacaoTenant.EtapaDefinirSegundaSenha))
         {
             AutenticacaoTenant.GuardarPendente(email, senha);
-            MostrarSegundaEtapa(email);
+            if (resposta.Etapa == AutenticacaoTenant.EtapaDefinirSegundaSenha) MostrarDefinirSegundaSenha(); else MostrarSegundaEtapa(email);
             return;
         }
 
@@ -77,7 +77,7 @@ public partial class AcessoSeguro_Login : Page
         LoginResposta resposta;
         try
         {
-            resposta = AutenticacaoTenant.Enviar(email, senha, segundaSenha);
+            resposta = AutenticacaoTenant.Enviar(email, senha, segundaSenha, null);
         }
         catch (WheraApiException ex)
         {
@@ -95,6 +95,15 @@ public partial class AcessoSeguro_Login : Page
         Concluir(resposta);
     }
 
+    protected void btnDefinir_Click(object sender, EventArgs e)
+    {
+        string email, senha;
+        if (!AutenticacaoTenant.ObterPendente(out email, out senha)) { MostrarPrimeiraEtapa(); MostrarErro("O tempo para concluir o cadastro acabou. Entre novamente."); return; }
+        if (string.IsNullOrWhiteSpace(txtNovaSegundaSenha.Text) || txtNovaSegundaSenha.Text != txtConfirmaSegundaSenha.Text) { MostrarDefinirSegundaSenha(); MostrarErro("As duas senhas precisam ser iguais."); return; }
+        try { Concluir(AutenticacaoTenant.Enviar(email, senha, null, txtNovaSegundaSenha.Text)); }
+        catch (WheraApiException ex) { MostrarDefinirSegundaSenha(); MostrarErro(AutenticacaoTenant.MensagemErro(ex)); }
+    }
+
     protected void btnVoltar_Click(object sender, EventArgs e)
     {
         AutenticacaoTenant.DescartarPendente();
@@ -105,10 +114,11 @@ public partial class AcessoSeguro_Login : Page
     {
         AutenticacaoTenant.DescartarPendente();
 
-        if (resposta == null || resposta.Etapa != AutenticacaoTenant.EtapaConcluido || resposta.Sessao == null)
+        if (resposta == null || resposta.Etapa != AutenticacaoTenant.EtapaConcluido || resposta.Sessao == null
+            || (resposta.Sessao.Papel != AutenticacaoTenant.PapelTenant && resposta.Sessao.Papel != AutenticacaoTenant.PapelGerente))
         {
             MostrarPrimeiraEtapa();
-            MostrarErro("A API não confirmou uma sessão válida para este painel.");
+            MostrarErro("Esta aplicação aceita apenas sessões de Tenant ou Gerente vinculadas a uma empresa.");
             return;
         }
 
@@ -120,6 +130,7 @@ public partial class AcessoSeguro_Login : Page
     {
         pnlCredenciais.Visible = true;
         pnlSegundaSenha.Visible = false;
+        pnlDefinirSegundaSenha.Visible = false;
         txtEmail.Focus();
     }
 
@@ -128,7 +139,16 @@ public partial class AcessoSeguro_Login : Page
         litEmail.Text = HttpUtility.HtmlEncode(email);
         pnlCredenciais.Visible = false;
         pnlSegundaSenha.Visible = true;
+        pnlDefinirSegundaSenha.Visible = false;
         txtSegundaSenha.Focus();
+    }
+
+    private void MostrarDefinirSegundaSenha()
+    {
+        pnlCredenciais.Visible = false;
+        pnlSegundaSenha.Visible = false;
+        pnlDefinirSegundaSenha.Visible = true;
+        txtNovaSegundaSenha.Focus();
     }
 
     private void MostrarErro(string mensagem)

@@ -69,6 +69,12 @@ namespace WheraOwnerTenant
             return Enviar<T>("POST", rota, corpo);
         }
 
+        public T PostComHeader<T>(string rota, object corpo, string nome, string valor)
+        {
+            byte[] bytes = corpo == null ? null : Encoding.UTF8.GetBytes(new JavaScriptSerializer { MaxJsonLength = int.MaxValue }.Serialize(corpo));
+            return Executar<T>("POST", rota, bytes, "application/json; charset=utf-8", TimeoutMs, nome, valor);
+        }
+
         public T Put<T>(string rota, object corpo)
         {
             return Enviar<T>("PUT", rota, corpo);
@@ -106,17 +112,32 @@ namespace WheraOwnerTenant
             Buffer.BlockCopy(conteudo, 0, corpo, cabecalho.Length, conteudo.Length);
             Buffer.BlockCopy(rodape, 0, corpo, cabecalho.Length + conteudo.Length, rodape.Length);
 
-            return Executar<T>("POST", rota, corpo, "multipart/form-data; boundary=" + limite, tempoLimiteMs);
+            return Executar<T>("POST", rota, corpo, "multipart/form-data; boundary=" + limite, tempoLimiteMs, null, null);
+        }
+
+        public T EnviarArquivoComCampo<T>(string rota, string campo, string nomeArquivo, string tipoConteudo, byte[] conteudo, string campoExtra, string valorExtra)
+        {
+            string limite = "----WheraOwnerTenant" + Guid.NewGuid().ToString("N");
+            string nome = (nomeArquivo ?? "arquivo").Replace("\"", "").Replace("\r", "").Replace("\n", "");
+            byte[] prefixo = Encoding.UTF8.GetBytes("--" + limite + "\r\nContent-Disposition: form-data; name=\"" + campoExtra + "\"\r\n\r\n" + valorExtra + "\r\n--" + limite + "\r\n" +
+                "Content-Disposition: form-data; name=\"" + campo + "\"; filename=\"" + nome + "\"\r\n" +
+                "Content-Type: " + (string.IsNullOrEmpty(tipoConteudo) ? "application/octet-stream" : tipoConteudo) + "\r\n\r\n");
+            byte[] rodape = Encoding.UTF8.GetBytes("\r\n--" + limite + "--\r\n");
+            var corpo = new byte[prefixo.Length + conteudo.Length + rodape.Length];
+            Buffer.BlockCopy(prefixo, 0, corpo, 0, prefixo.Length);
+            Buffer.BlockCopy(conteudo, 0, corpo, prefixo.Length, conteudo.Length);
+            Buffer.BlockCopy(rodape, 0, corpo, prefixo.Length + conteudo.Length, rodape.Length);
+            return Executar<T>("POST", rota, corpo, "multipart/form-data; boundary=" + limite, TimeoutMs, null, null);
         }
 
         private T Enviar<T>(string metodo, string rota, object corpo)
         {
             byte[] bytes = corpo == null ? null
                 : Encoding.UTF8.GetBytes(new JavaScriptSerializer { MaxJsonLength = int.MaxValue }.Serialize(corpo));
-            return Executar<T>(metodo, rota, bytes, "application/json; charset=utf-8", TimeoutMs);
+            return Executar<T>(metodo, rota, bytes, "application/json; charset=utf-8", TimeoutMs, null, null);
         }
 
-        private T Executar<T>(string metodo, string rota, byte[] bytes, string tipoCorpo, int tempoLimiteMs)
+        private T Executar<T>(string metodo, string rota, byte[] bytes, string tipoCorpo, int tempoLimiteMs, string headerNome, string headerValor)
         {
             var serializador = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 
@@ -127,6 +148,7 @@ namespace WheraOwnerTenant
             requisicao.ReadWriteTimeout = tempoLimiteMs;
             if (!string.IsNullOrEmpty(token))
                 requisicao.Headers[HttpRequestHeader.Authorization] = "Bearer " + token;
+            if (!string.IsNullOrEmpty(headerNome)) requisicao.Headers[headerNome] = headerValor;
 
             if (bytes != null)
             {

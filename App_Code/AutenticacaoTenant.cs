@@ -38,8 +38,11 @@ namespace WheraOwnerTenant
     public static class AutenticacaoTenant
     {
         public const string PapelOwner = "Owner";
+        public const string PapelTenant = "Tenant";
+        public const string PapelGerente = "Gerente";
         public const string EtapaConcluido = "Concluido";
         public const string EtapaSegundaSenha = "SegundaSenha";
+        public const string EtapaDefinirSegundaSenha = "DefinirSegundaSenha";
 
         private const string ChavePendente = "WheraOwnerTenant.LoginPendente";
         private static readonly TimeSpan ValidadePendente = TimeSpan.FromMinutes(5);
@@ -51,10 +54,10 @@ namespace WheraOwnerTenant
             public DateTime CriadoEm;
         }
 
-        public static LoginResposta Enviar(string email, string senha, string segundaSenha)
+        public static LoginResposta Enviar(string email, string senha, string segundaSenha, string novaSegundaSenha)
         {
             return new WheraApi(null).Post<LoginResposta>("api/autenticacao/login",
-                new { Email = email, Senha = senha, SegundaSenha = segundaSenha });
+                new { Email = email, Senha = senha, SegundaSenha = segundaSenha, NovaSegundaSenha = novaSegundaSenha });
         }
 
         public static void GuardarPendente(string email, string senha)
@@ -95,7 +98,8 @@ namespace WheraOwnerTenant
 
             SessaoTenant.Iniciar(sessao.AccessToken, expiraEm,
                 sessao.Usuario != null ? sessao.Usuario.Nome : null,
-                sessao.Usuario != null ? sessao.Usuario.Email : null);
+                sessao.Usuario != null ? sessao.Usuario.Email : null,
+                sessao.Papel);
         }
 
         /// <summary>Mensagem para a tela a partir do erro da API.</summary>

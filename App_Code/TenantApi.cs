@@ -61,6 +61,42 @@ namespace WheraOwnerTenant
         {
             api.Patch<object>("api/usuarios/me/senha", new { SenhaAtual = senhaAtual, NovaSenha = novaSenha });
         }
+
+        public static void AlterarSegundaSenha(WheraApi api, string atual, string nova)
+        {
+            api.Patch<object>("api/usuarios/me/segunda-senha", new { SegundaSenhaAtual = atual, NovaSegundaSenha = nova });
+        }
+
+        public static PreCadastroResposta CriarPreCadastro(WheraApi api, object request)
+        {
+            return api.Post<PreCadastroResposta>("api/pre-cadastros/empresas", request);
+        }
+
+        public static VinculoPreCadastroResposta VincularPreCadastro(WheraApi api, string empresaId, string codigo, object request)
+        {
+            return api.PostComHeader<VinculoPreCadastroResposta>("api/pre-cadastros/empresas/" + Uri.EscapeDataString(empresaId) + "/vincular", request, "X-Codigo-Continuacao", codigo);
+        }
+
+        public static List<AtendentePerfil> Atendentes(WheraApi api, string id) { return api.Get<List<AtendentePerfil>>(Rota(id, "atendentes")) ?? new List<AtendentePerfil>(); }
+        public static AtendentePerfil AdicionarAtendente(WheraApi api, string id, object request) { return api.Post<AtendentePerfil>(Rota(id, "atendentes"), request); }
+        public static AtendentePerfil AtualizarAtendente(WheraApi api, string empresaId, string atendenteId, object request) { return api.Put<AtendentePerfil>(Rota(empresaId, "atendentes") + "/" + Uri.EscapeDataString(atendenteId), request); }
+        public static void RemoverAtendente(WheraApi api, string empresaId, string atendenteId) { api.Delete(Rota(empresaId, "atendentes") + "/" + Uri.EscapeDataString(atendenteId)); }
+        public static List<AtendentePerfil> ReordenarAtendentes(WheraApi api, string id, List<string> ids) { return api.Put<List<AtendentePerfil>>(Rota(id, "atendentes") + "/ordem", new { Ids = ids }); }
+
+        public static SemanaFuncionamento Semana(WheraApi api, string id) { return api.Get<SemanaFuncionamento>(Rota(id, "horarios")); }
+        public static SemanaFuncionamento DefinirSemana(WheraApi api, string id, object request) { return api.Put<SemanaFuncionamento>(Rota(id, "horarios/semana"), request); }
+
+        public static CanalPerfil AdicionarCanal(WheraApi api, string id, object request) { return api.Post<CanalPerfil>(Rota(id, "canais"), request); }
+        public static CanalPerfil AtualizarCanal(WheraApi api, string empresaId, string canalId, object request) { return api.Put<CanalPerfil>(Rota(empresaId, "canais") + "/" + Uri.EscapeDataString(canalId), request); }
+        public static void RemoverCanal(WheraApi api, string empresaId, string canalId) { api.Delete(Rota(empresaId, "canais") + "/" + Uri.EscapeDataString(canalId)); }
+        public static List<CanalPerfil> Canais(WheraApi api, string id) { return api.Get<List<CanalPerfil>>(Rota(id, "canais")) ?? new List<CanalPerfil>(); }
+
+        public static ImagemPerfilEnviada EnviarImagemPerfil(WheraApi api, string empresaId, string nome, string tipo, string tipoImagem, byte[] conteudo)
+        {
+            return api.EnviarArquivoComCampo<ImagemPerfilEnviada>(Rota(empresaId, "imagens"), "arquivo", nome, tipo, conteudo, "tipo", tipoImagem);
+        }
+
+        private static string Rota(string empresaId, string recurso) { return "api/empresas/" + Uri.EscapeDataString(empresaId) + "/" + recurso; }
     }
 
     public class GerenteTenant
@@ -113,4 +149,8 @@ namespace WheraOwnerTenant
         public string Nome { get; set; }
         public string Email { get; set; }
     }
+
+    public class PreCadastroResposta { public string EmpresaId { get; set; } public string Slug { get; set; } public string Status { get; set; } public string CodigoContinuacao { get; set; } public string CodigoExpiraEm { get; set; } }
+    public class VinculoPreCadastroResposta { public string EmpresaId { get; set; } public string Slug { get; set; } public string Status { get; set; } public SessaoResposta Sessao { get; set; } }
+    public class ImagemPerfilEnviada { public string Url { get; set; } }
 }

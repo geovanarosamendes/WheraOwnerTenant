@@ -12,6 +12,7 @@ public partial class Adm_Gerentes : PaginaTenant
 
     private void Carregar()
     {
+        if (!SessaoTenant.EhTenant) { MostrarTexto("A administração de gerentes é exclusiva do proprietário Tenant."); return; }
         try
         {
             var empresa = TenantApi.MinhaEmpresa(Api);
