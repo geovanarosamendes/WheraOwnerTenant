@@ -10,6 +10,8 @@ Base independente do painel de gestão dos tenants da Whera.
 - URL e timeout da API configuráveis em `Web.config` (`WheraApiUrl` e `WheraApiTimeout`).
 - Login em duas etapas conforme o contrato atualmente usado pela API Whera.
 - Dashboard inicial protegido por sessão, sem dados fictícios ou acesso direto ao banco.
+- Telas de dashboard, perfil da empresa, publicações, usuários e acesso, redes sociais, relatórios e configurações.
+- Matriz de contratos e bloqueios em `docs/ENDPOINTS_E_TELAS.md`.
 
 ## Executar
 

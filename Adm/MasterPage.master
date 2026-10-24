@@ -12,7 +12,7 @@
     <form id="formPrincipal" runat="server">
         <header class="topo"><a class="marca" href="~/Adm/Home.aspx">Whera<span>Tenant</span></a><div class="conta"><asp:Literal ID="litUsuario" runat="server" /><a href="~/AcessoSeguro/Sair.aspx">Sair</a></div></header>
         <div class="corpo">
-            <nav class="menu"><span class="menu-titulo">PAINEL DO TENANT</span><a class="ativo" href="~/Adm/Home.aspx">Visão geral</a><a href="#">Redes sociais</a><a href="#">Relatórios</a><a href="#">Configurações</a></nav>
+            <nav class="menu"><span class="menu-titulo">PAINEL DO TENANT</span><a class="<%= Ativo("Home.aspx") %>" href="~/Adm/Home.aspx">Visão geral</a><a class="<%= Ativo("MinhaEmpresa.aspx") %>" href="~/Adm/MinhaEmpresa.aspx">Minha empresa</a><a class="<%= Ativo("Conteudos.aspx") %>" href="~/Adm/Conteudos.aspx">Publicações</a><a class="<%= Ativo("Gerentes.aspx") %>" href="~/Adm/Gerentes.aspx">Usuários e acesso</a><a class="<%= Ativo("RedesSociais.aspx") %>" href="~/Adm/RedesSociais.aspx">Redes sociais</a><a class="<%= Ativo("Relatorios.aspx") %>" href="~/Adm/Relatorios.aspx">Relatórios</a><a class="<%= Ativo("Configuracoes.aspx") %>" href="~/Adm/Configuracoes.aspx">Configurações</a></nav>
             <main class="conteudo"><asp:ContentPlaceHolder ID="Conteudo" runat="server" /></main>
         </div>
     </form>
