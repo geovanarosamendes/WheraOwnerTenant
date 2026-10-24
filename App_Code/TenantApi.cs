@@ -77,6 +77,11 @@ namespace WheraOwnerTenant
             return api.PostComHeader<VinculoPreCadastroResposta>("api/pre-cadastros/empresas/" + Uri.EscapeDataString(empresaId) + "/vincular", request, "X-Codigo-Continuacao", codigo);
         }
 
+        public static ValidacaoPreCadastroResposta ValidarPreCadastro(WheraApi api, string empresaId, string codigo)
+        {
+            return api.PostComHeader<ValidacaoPreCadastroResposta>("api/pre-cadastros/empresas/" + Uri.EscapeDataString(empresaId) + "/validar", null, "X-Codigo-Continuacao", codigo);
+        }
+
         public static List<AtendentePerfil> Atendentes(WheraApi api, string id) { return api.Get<List<AtendentePerfil>>(Rota(id, "atendentes")) ?? new List<AtendentePerfil>(); }
         public static AtendentePerfil AdicionarAtendente(WheraApi api, string id, object request) { return api.Post<AtendentePerfil>(Rota(id, "atendentes"), request); }
         public static AtendentePerfil AtualizarAtendente(WheraApi api, string empresaId, string atendenteId, object request) { return api.Put<AtendentePerfil>(Rota(empresaId, "atendentes") + "/" + Uri.EscapeDataString(atendenteId), request); }
@@ -151,6 +156,7 @@ namespace WheraOwnerTenant
     }
 
     public class PreCadastroResposta { public string EmpresaId { get; set; } public string Slug { get; set; } public string Status { get; set; } public string CodigoContinuacao { get; set; } public string CodigoExpiraEm { get; set; } }
+    public class ValidacaoPreCadastroResposta { public string EmpresaId { get; set; } public string Slug { get; set; } public string Status { get; set; } public string CodigoExpiraEm { get; set; } public string IdentificadorTemporario { get; set; } public string IdentificadorExpiraEm { get; set; } }
     public class VinculoPreCadastroResposta { public string EmpresaId { get; set; } public string Slug { get; set; } public string Status { get; set; } public SessaoResposta Sessao { get; set; } }
     public class ImagemPerfilEnviada { public string Url { get; set; } }
 }

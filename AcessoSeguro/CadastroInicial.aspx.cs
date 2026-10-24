@@ -21,7 +21,13 @@ public partial class AcessoSeguro_CadastroInicial : System.Web.UI.Page
     protected void btnContinuar_Click(object sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(txtEmpresaId.Text) || string.IsNullOrWhiteSpace(txtCodigo.Text)) { MostrarErro("Informe o Empresa ID e o código de continuação."); return; }
-        ViewState[ChaveEmpresaId] = txtEmpresaId.Text.Trim(); ViewState[ChaveCodigo] = txtCodigo.Text.Trim(); litEmpresaId.Text = HttpUtility.HtmlEncode(txtEmpresaId.Text.Trim()); pnlCriar.Visible = false; pnlVincular.Visible = true;
+        try
+        {
+            var validacao = TenantApi.ValidarPreCadastro(new WheraApi(null), txtEmpresaId.Text.Trim(), txtCodigo.Text.Trim());
+            ViewState[ChaveEmpresaId] = txtEmpresaId.Text.Trim(); ViewState[ChaveCodigo] = txtCodigo.Text.Trim(); ViewState["WheraOwnerTenant.PreCadastro.Validacao"] = validacao.IdentificadorTemporario;
+            litEmpresaId.Text = HttpUtility.HtmlEncode(txtEmpresaId.Text.Trim()); pnlCriar.Visible = false; pnlVincular.Visible = true;
+        }
+        catch (WheraApiException ex) { MostrarErro(ex.Message); }
     }
 
     protected void btnVincular_Click(object sender, EventArgs e)
@@ -30,7 +36,7 @@ public partial class AcessoSeguro_CadastroInicial : System.Web.UI.Page
         if (string.IsNullOrWhiteSpace(empresaId) || string.IsNullOrWhiteSpace(codigo)) { MostrarErro("O código de continuação não está disponível. Comece novamente."); return; }
         try
         {
-            var resposta = TenantApi.VincularPreCadastro(new WheraApi(null), empresaId, codigo, new { Email = txtEmail.Text.Trim(), Nome = txtNome.Text.Trim(), Senha = txtSenha.Text, SegundaSenha = txtSegundaSenha.Text, SegundaSenhaAtual = (string)null });
+            var resposta = TenantApi.VincularPreCadastro(new WheraApi(null), empresaId, codigo, new { Email = txtEmail.Text.Trim(), Nome = txtNome.Text.Trim(), Senha = txtSenha.Text, SegundaSenha = txtSegundaSenha.Text, SegundaSenhaAtual = (string)null, IdentificadorTemporario = Convert.ToString(ViewState["WheraOwnerTenant.PreCadastro.Validacao"]) });
             AutenticacaoTenant.IniciarSessao(resposta.Sessao);
             Response.Redirect("~/Adm/Home.aspx", true);
         }
