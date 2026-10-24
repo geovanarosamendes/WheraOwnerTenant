@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Entrar | Whera Tenant</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" />
-    <link href="~/CSS/site.css" rel="stylesheet" type="text/css" />
+    <link runat="server" href="~/CSS/site.css" rel="stylesheet" type="text/css" />
 </head>
 <body class="pagina-login">
     <form id="formLogin" runat="server">
@@ -52,7 +52,7 @@
                 <asp:Button ID="btnDefinir" runat="server" Text="Criar senha e entrar" CssClass="botao" OnClick="btnDefinir_Click" />
                 <asp:LinkButton ID="btnVoltarDefinicao" runat="server" CssClass="link-voltar" OnClick="btnVoltar_Click">Usar outra conta</asp:LinkButton>
             </asp:Panel>
-            <p class="dica"><a href="~/AcessoSeguro/CadastroInicial.aspx">Ainda não tenho vínculo: iniciar cadastro</a></p>
+            <p class="dica"><a runat="server" href="~/AcessoSeguro/CadastroInicial.aspx">Ainda não tenho vínculo: iniciar cadastro</a></p>
         </div>
     </form>
 </body>

@@ -21,7 +21,7 @@
             <label class="campo"><span>Cidade</span><asp:TextBox ID="txtCidade" runat="server" MaxLength="100" /></label>
             <label class="campo"><span>Estado</span><asp:TextBox ID="txtEstado" runat="server" MaxLength="2" /></label>
         </div>
-        <div class="acoes-form"><asp:Button ID="btnSalvar" runat="server" Text="Salvar alterações" CssClass="botao-primario" OnClick="btnSalvar_Click" /><a class="botao botao-secundario" href="~/Adm/Home.aspx">Cancelar</a></div>
+        <div class="acoes-form"><asp:Button ID="btnSalvar" runat="server" Text="Salvar alterações" CssClass="botao-primario" OnClick="btnSalvar_Click" /><a runat="server" class="botao botao-secundario" href="~/Adm/Home.aspx">Cancelar</a></div>
         <p class="dica">A API valida a permissão da empresa e a versão do perfil antes de gravar.</p>
     </asp:Panel>
 </asp:Content>
