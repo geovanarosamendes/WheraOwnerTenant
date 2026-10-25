@@ -16,6 +16,7 @@ namespace WheraOwnerTenant
         private const string ChaveNome = "WheraOwnerTenant.Nome";
         private const string ChaveEmail = "WheraOwnerTenant.Email";
         private const string ChavePapel = "WheraOwnerTenant.Papel";
+        private const string ChaveEmpresaSelecionada = "WheraOwnerTenant.EmpresaSelecionada";
 
         public static void Iniciar(string token, DateTime expiraEmUtc, string nome, string email, string papel)
         {
@@ -25,6 +26,7 @@ namespace WheraOwnerTenant
             sessao[ChaveNome] = nome;
             sessao[ChaveEmail] = email;
             sessao[ChavePapel] = papel;
+            sessao.Remove(ChaveEmpresaSelecionada);
         }
 
         public static void Encerrar()
@@ -36,6 +38,7 @@ namespace WheraOwnerTenant
             sessao.Remove(ChaveNome);
             sessao.Remove(ChaveEmail);
             sessao.Remove(ChavePapel);
+            sessao.Remove(ChaveEmpresaSelecionada);
         }
 
         /// <summary>Token válido ou null (sem login ou vencido).</summary>
@@ -78,5 +81,8 @@ namespace WheraOwnerTenant
         public static string Papel { get { return HttpContext.Current.Session[ChavePapel] as string; } }
         public static bool EhTenant { get { return string.Equals(Papel, "Tenant", StringComparison.OrdinalIgnoreCase); } }
         public static bool EhGerente { get { return string.Equals(Papel, "Gerente", StringComparison.OrdinalIgnoreCase); } }
+        public static bool EhOwner { get { return string.Equals(Papel, "Owner", StringComparison.OrdinalIgnoreCase); } }
+        public static string EmpresaSelecionadaId { get { return HttpContext.Current.Session[ChaveEmpresaSelecionada] as string; } }
+        public static void SelecionarEmpresa(string empresaId) { HttpContext.Current.Session[ChaveEmpresaSelecionada] = empresaId; }
     }
 }

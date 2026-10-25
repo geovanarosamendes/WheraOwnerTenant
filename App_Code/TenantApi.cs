@@ -9,7 +9,19 @@ namespace WheraOwnerTenant
     {
         public static PerfilEmpresa MinhaEmpresa(WheraApi api)
         {
+            if (SessaoTenant.EhOwner && !string.IsNullOrWhiteSpace(SessaoTenant.EmpresaSelecionadaId))
+                return PerfilEmpresa(api, SessaoTenant.EmpresaSelecionadaId);
             return api.Get<PerfilEmpresa>("api/perfis/minha-empresa");
+        }
+
+        public static PerfilEmpresa PerfilEmpresa(WheraApi api, string id)
+        {
+            return api.Get<PerfilEmpresa>("api/empresas/" + Uri.EscapeDataString(id) + "/perfil");
+        }
+
+        public static ResultadoEmpresas ListarEmpresas(WheraApi api, string busca)
+        {
+            return api.Get<ResultadoEmpresas>("api/empresas?busca=" + Uri.EscapeDataString(busca ?? "") + "&pagina=1&tamanhoPagina=100");
         }
 
         public static PerfilEmpresa AtualizarPerfil(WheraApi api, string id, object perfil)
@@ -153,6 +165,21 @@ namespace WheraOwnerTenant
         public string Id { get; set; }
         public string Nome { get; set; }
         public string Email { get; set; }
+    }
+
+    public class ResultadoEmpresas
+    {
+        public List<EmpresaResumoTenant> Itens { get; set; }
+        public int TotalItens { get; set; }
+    }
+
+    public class EmpresaResumoTenant
+    {
+        public string Id { get; set; }
+        public string NomeFantasia { get; set; }
+        public string Slug { get; set; }
+        public string Modalidade { get; set; }
+        public string Status { get; set; }
     }
 
     public class PreCadastroResposta { public string EmpresaId { get; set; } public string Slug { get; set; } public string Status { get; set; } public string CodigoContinuacao { get; set; } public string CodigoExpiraEm { get; set; } }

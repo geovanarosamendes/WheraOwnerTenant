@@ -1,16 +1,50 @@
 using System;
 using System.Linq;
 using System.Web;
+using System.Web.UI.WebControls;
 using WheraOwnerTenant;
 
 public partial class Adm_Home : PaginaTenant
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!IsPostBack) Carregar();
+        if (!IsPostBack)
+        {
+            pnlSelecaoOwner.Visible = SessaoTenant.EhOwner;
+            if (SessaoTenant.EhOwner) PesquisarEmpresas("");
+            Carregar();
+        }
     }
 
     protected void btnAtualizar_Click(object sender, EventArgs e) { Carregar(); }
+
+    protected void btnBuscarEmpresa_Click(object sender, EventArgs e) { PesquisarEmpresas(txtBuscaEmpresa.Text.Trim()); }
+
+    protected void btnSelecionarEmpresa_Click(object sender, EventArgs e)
+    {
+        if (!SessaoTenant.EhOwner || string.IsNullOrWhiteSpace(ddlEmpresas.SelectedValue)) { MostrarErro("Selecione uma empresa autorizada pela API."); return; }
+        try
+        {
+            TenantApi.PerfilEmpresa(Api, ddlEmpresas.SelectedValue);
+            SessaoTenant.SelecionarEmpresa(ddlEmpresas.SelectedValue);
+            Carregar();
+            litOwnerMensagem.Text = "Empresa selecionada.";
+        }
+        catch (WheraApiException ex) { TratarErro(ex); }
+    }
+
+    private void PesquisarEmpresas(string busca)
+    {
+        try
+        {
+            var resultado = TenantApi.ListarEmpresas(Api, busca);
+            ddlEmpresas.Items.Clear();
+            foreach (var empresa in resultado == null || resultado.Itens == null ? new System.Collections.Generic.List<EmpresaResumoTenant>() : resultado.Itens)
+                ddlEmpresas.Items.Add(new ListItem(empresa.NomeFantasia + " — " + StatusEmpresa.Rotulo(empresa.Status), empresa.Id));
+            litOwnerMensagem.Text = ddlEmpresas.Items.Count == 0 ? "Nenhuma empresa encontrada." : ddlEmpresas.Items.Count + " empresa(s) encontrada(s).";
+        }
+        catch (WheraApiException ex) { TratarErro(ex); }
+    }
 
     private void Carregar()
     {
@@ -26,6 +60,9 @@ public partial class Adm_Home : PaginaTenant
             try { conteudos = (TenantApi.ListarConteudos(Api, empresa.Id, "Story").Itens ?? new System.Collections.Generic.List<ConteudoTenant>()).Count + (TenantApi.ListarConteudos(Api, empresa.Id, "Promocao").Itens ?? new System.Collections.Generic.List<ConteudoTenant>()).Count; } catch (WheraApiException) { }
             litConteudos.Text = conteudos.ToString();
         }
-        catch (WheraApiException ex) { if (ex.StatusCode == 401) { TratarSessaoRecusada(ex); return; } pnlErro.Visible = true; litErro.Text = HttpUtility.HtmlEncode(ex.Message); }
+        catch (WheraApiException ex) { TratarErro(ex); }
     }
+
+    private void TratarErro(WheraApiException ex) { if (ex.StatusCode == 401) { TratarSessaoRecusada(ex); return; } MostrarErro(ex.Message); }
+    private void MostrarErro(string texto) { pnlErro.Visible = true; litErro.Text = HttpUtility.HtmlEncode(texto); }
 }

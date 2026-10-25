@@ -115,10 +115,10 @@ public partial class AcessoSeguro_Login : Page
         AutenticacaoTenant.DescartarPendente();
 
         if (resposta == null || resposta.Etapa != AutenticacaoTenant.EtapaConcluido || resposta.Sessao == null
-            || (resposta.Sessao.Papel != AutenticacaoTenant.PapelTenant && resposta.Sessao.Papel != AutenticacaoTenant.PapelGerente))
+            || (resposta.Sessao.Papel != AutenticacaoTenant.PapelOwner && resposta.Sessao.Papel != AutenticacaoTenant.PapelTenant && resposta.Sessao.Papel != AutenticacaoTenant.PapelGerente))
         {
             MostrarPrimeiraEtapa();
-            MostrarErro("Esta aplicação aceita apenas sessões de Tenant ou Gerente vinculadas a uma empresa.");
+            MostrarErro("Esta aplicação aceita apenas sessões Owner, Tenant ou Gerente autorizadas pela API Whera.");
             return;
         }
 
