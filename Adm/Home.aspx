@@ -3,6 +3,7 @@
 <asp:Content ID="CorpoPagina" ContentPlaceHolderID="Conteudo" runat="server">
     <div class="cabecalho-pagina"><div><span class="sobretitulo">OWNER TENANT</span><h1>Visão geral</h1><p>Resumo da empresa e dos recursos disponíveis no Whera.</p></div><asp:Button ID="btnAtualizar" runat="server" Text="Atualizar" CssClass="botao-secundario" OnClick="btnAtualizar_Click" /></div>
     <asp:Panel ID="pnlErro" runat="server" CssClass="erro" Visible="false"><asp:Literal ID="litErro" runat="server" /></asp:Panel>
+    <asp:Panel ID="pnlAviso" runat="server" CssClass="sucesso-msg" Visible="false"><asp:Literal ID="litAviso" runat="server" /></asp:Panel>
     <asp:Panel ID="pnlSelecaoOwner" runat="server" CssClass="painel" Visible="false">
         <div class="painel-cabecalho"><h2>Selecionar empresa</h2><p>Como Owner, pesquise uma empresa para abrir o contexto administrativo autorizado pela API.</p></div>
         <div class="gestao-linha"><label class="campo campo-largo"><span>Nome, slug ou termo de busca</span><asp:TextBox ID="txtBuscaEmpresa" runat="server" MaxLength="100" /></label><asp:Button ID="btnBuscarEmpresa" runat="server" Text="Pesquisar" CssClass="botao-secundario" OnClick="btnBuscarEmpresa_Click" /></div>

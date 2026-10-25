@@ -7,8 +7,8 @@ O nome ERA da especificação foi interpretado como Whera, conforme o contexto d
 | Tela | Endpoint | Situação |
 |---|---|---|
 | Login | `POST /api/autenticacao/login` | Pronto |
-| Cadastro inicial | `POST /api/pre-cadastros/empresas` | Pronto |
-| Vínculo Tenant | `POST /api/pre-cadastros/empresas/{empresaId}/vincular` + `X-Codigo-Continuacao` | Pronto |
+| Cadastro inicial | — | Removido deste painel; realizado no `centro_comecial` |
+| Vínculo Tenant | — | Removido deste painel; o fluxo de cadastro e vínculo é iniciado no `centro_comecial` |
 | Dashboard / empresa atual | `GET /api/perfis/minha-empresa` | Pronto |
 | Perfil da empresa | `PUT /api/empresas/{id}/perfil` | Pronto |
 | Imagens do perfil | `POST /api/empresas/{id}/imagens` | Pronto |

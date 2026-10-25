@@ -11,8 +11,9 @@ Base independente do painel de gestão dos tenants da Whera.
 - Login em duas etapas conforme o contrato atualmente usado pela API Whera.
 - Dashboard inicial protegido por sessão, sem dados fictícios ou acesso direto ao banco.
 - Telas de dashboard, perfil da empresa, publicações, usuários e acesso, redes sociais, relatórios e configurações.
-- Telas de cadastro inicial, imagens, catálogo, horários e atendentes.
+- Imagens, catálogo, horários e atendentes. O cadastro inicial de empresa pertence ao Centro Comercial; esta aplicação permanece focada no acesso e na operação do Tenant.
 - Matriz de contratos e bloqueios em `docs/ENDPOINTS_E_TELAS.md`.
+- Prévia local disponível com `WheraDevPreview=true`; ela só aparece em requisições locais, não chama a API e não substitui o login real.
 
 ## Executar
 

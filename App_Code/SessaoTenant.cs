@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Web;
 
 namespace WheraOwnerTenant
@@ -17,6 +18,8 @@ namespace WheraOwnerTenant
         private const string ChaveEmail = "WheraOwnerTenant.Email";
         private const string ChavePapel = "WheraOwnerTenant.Papel";
         private const string ChaveEmpresaSelecionada = "WheraOwnerTenant.EmpresaSelecionada";
+        private const string ChaveAviso = "WheraOwnerTenant.Aviso";
+        private const string TokenPreview = "whera-dev-preview";
 
         public static void Iniciar(string token, DateTime expiraEmUtc, string nome, string email, string papel)
         {
@@ -27,6 +30,7 @@ namespace WheraOwnerTenant
             sessao[ChaveEmail] = email;
             sessao[ChavePapel] = papel;
             sessao.Remove(ChaveEmpresaSelecionada);
+            sessao.Remove(ChaveAviso);
         }
 
         public static void Encerrar()
@@ -39,6 +43,7 @@ namespace WheraOwnerTenant
             sessao.Remove(ChaveEmail);
             sessao.Remove(ChavePapel);
             sessao.Remove(ChaveEmpresaSelecionada);
+            sessao.Remove(ChaveAviso);
         }
 
         /// <summary>Token válido ou null (sem login ou vencido).</summary>
@@ -51,6 +56,27 @@ namespace WheraOwnerTenant
                 if (!(sessao[ChaveExpiraEm] is DateTime) || (DateTime)sessao[ChaveExpiraEm] <= DateTime.UtcNow) return null;
                 return (string)sessao[ChaveToken];
             }
+        }
+
+        public static bool PreviewDisponivel
+        {
+            get
+            {
+                bool configurado;
+                return HttpContext.Current != null && HttpContext.Current.Request.IsLocal
+                    && bool.TryParse(ConfigurationManager.AppSettings["WheraDevPreview"], out configurado) && configurado;
+            }
+        }
+
+        public static bool DevPreviewAtiva
+        {
+            get { return PreviewDisponivel && string.Equals(Token, TokenPreview, StringComparison.Ordinal); }
+        }
+
+        public static void IniciarPreview()
+        {
+            if (!PreviewDisponivel) throw new InvalidOperationException("A prévia local está desativada.");
+            Iniciar(TokenPreview, DateTime.UtcNow.AddHours(8), "Prévia local", "preview@local", "Tenant");
         }
 
         public static bool Ativa
@@ -84,5 +110,7 @@ namespace WheraOwnerTenant
         public static bool EhOwner { get { return string.Equals(Papel, "Owner", StringComparison.OrdinalIgnoreCase); } }
         public static string EmpresaSelecionadaId { get { return HttpContext.Current.Session[ChaveEmpresaSelecionada] as string; } }
         public static void SelecionarEmpresa(string empresaId) { HttpContext.Current.Session[ChaveEmpresaSelecionada] = empresaId; }
+        public static void DefinirAviso(string mensagem) { HttpContext.Current.Session[ChaveAviso] = mensagem; }
+        public static string RetirarAviso() { var aviso = HttpContext.Current.Session[ChaveAviso] as string; HttpContext.Current.Session.Remove(ChaveAviso); return aviso; }
     }
 }

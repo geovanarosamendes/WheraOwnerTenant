@@ -10,6 +10,8 @@ public partial class Adm_Home : PaginaTenant
     {
         if (!IsPostBack)
         {
+            var aviso = SessaoTenant.RetirarAviso();
+            if (!string.IsNullOrWhiteSpace(aviso)) { litAviso.Text = HttpUtility.HtmlEncode(aviso); pnlAviso.Visible = true; }
             pnlSelecaoOwner.Visible = SessaoTenant.EhOwner;
             if (SessaoTenant.EhOwner) PesquisarEmpresas("");
             Carregar();

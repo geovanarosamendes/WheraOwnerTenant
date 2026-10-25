@@ -8,7 +8,8 @@ public partial class Adm_MasterPage : MasterPage
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        litUsuario.Text = HttpUtility.HtmlEncode(WheraOwnerTenant.SessaoTenant.Nome ?? WheraOwnerTenant.SessaoTenant.Email ?? "");
+        litUsuario.Text = HttpUtility.HtmlEncode(WheraOwnerTenant.SessaoTenant.Nome ?? WheraOwnerTenant.SessaoTenant.Email ?? "")
+            + (WheraOwnerTenant.SessaoTenant.DevPreviewAtiva ? " · PRÉVIA LOCAL" : "");
     }
 
     protected string Ativo(params string[] telas)

@@ -52,7 +52,11 @@
                 <asp:Button ID="btnDefinir" runat="server" Text="Criar senha e entrar" CssClass="botao" OnClick="btnDefinir_Click" />
                 <asp:LinkButton ID="btnVoltarDefinicao" runat="server" CssClass="link-voltar" OnClick="btnVoltar_Click">Usar outra conta</asp:LinkButton>
             </asp:Panel>
-            <p class="dica"><a runat="server" href="~/AcessoSeguro/CadastroInicial.aspx">Ainda não tenho vínculo: iniciar cadastro</a></p>
+            <asp:Panel ID="pnlPreviaLocal" runat="server" CssClass="aviso" Visible="false">
+                <p>Modo de desenvolvimento local</p>
+                <asp:Button ID="btnPreviaLocal" runat="server" Text="Abrir prévia do painel" CssClass="botao-secundario" OnClick="btnPreviaLocal_Click" />
+            </asp:Panel>
+            <p class="dica">Para cadastrar uma nova empresa, entre no Centro Comercial Whera e use Configurações &gt; Divulgue sua empresa.</p>
         </div>
     </form>
 </body>

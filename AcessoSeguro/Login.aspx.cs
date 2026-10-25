@@ -20,8 +20,16 @@ public partial class AcessoSeguro_Login : Page
         {
             AutenticacaoTenant.DescartarPendente();
             pnlExpirou.Visible = Request.QueryString["expirou"] == "1";
+            pnlPreviaLocal.Visible = SessaoTenant.PreviewDisponivel;
             txtEmail.Focus();
         }
+    }
+
+    protected void btnPreviaLocal_Click(object sender, EventArgs e)
+    {
+        if (!SessaoTenant.PreviewDisponivel) { MostrarErro("A prévia local está desativada."); return; }
+        SessaoTenant.IniciarPreview();
+        Response.Redirect("~/Adm/Home.aspx", true);
     }
 
     protected void btnContinuar_Click(object sender, EventArgs e)
