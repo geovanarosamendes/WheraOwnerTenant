@@ -17,11 +17,12 @@ namespace WheraOwnerTenant
         private const string ChaveNome = "WheraOwnerTenant.Nome";
         private const string ChaveEmail = "WheraOwnerTenant.Email";
         private const string ChavePapel = "WheraOwnerTenant.Papel";
+        private const string ChavePapelReal = "WheraOwnerTenant.PapelReal";
         private const string ChaveEmpresaSelecionada = "WheraOwnerTenant.EmpresaSelecionada";
         private const string ChaveAviso = "WheraOwnerTenant.Aviso";
         private const string TokenPreview = "whera-dev-preview";
 
-        public static void Iniciar(string token, DateTime expiraEmUtc, string nome, string email, string papel)
+        public static void Iniciar(string token, DateTime expiraEmUtc, string nome, string email, string papel, string papelReal = null)
         {
             var sessao = HttpContext.Current.Session;
             sessao[ChaveToken] = token;
@@ -29,6 +30,7 @@ namespace WheraOwnerTenant
             sessao[ChaveNome] = nome;
             sessao[ChaveEmail] = email;
             sessao[ChavePapel] = papel;
+            sessao[ChavePapelReal] = string.IsNullOrWhiteSpace(papelReal) ? papel : papelReal;
             sessao.Remove(ChaveEmpresaSelecionada);
             sessao.Remove(ChaveAviso);
         }
@@ -42,6 +44,7 @@ namespace WheraOwnerTenant
             sessao.Remove(ChaveNome);
             sessao.Remove(ChaveEmail);
             sessao.Remove(ChavePapel);
+            sessao.Remove(ChavePapelReal);
             sessao.Remove(ChaveEmpresaSelecionada);
             sessao.Remove(ChaveAviso);
         }
@@ -105,9 +108,23 @@ namespace WheraOwnerTenant
         }
 
         public static string Papel { get { return HttpContext.Current.Session[ChavePapel] as string; } }
-        public static bool EhTenant { get { return string.Equals(Papel, "Tenant", StringComparison.OrdinalIgnoreCase); } }
-        public static bool EhGerente { get { return string.Equals(Papel, "Gerente", StringComparison.OrdinalIgnoreCase); } }
-        public static bool EhOwner { get { return string.Equals(Papel, "Owner", StringComparison.OrdinalIgnoreCase); } }
+        public static string PapelReal { get { return HttpContext.Current.Session[ChavePapelReal] as string; } }
+        public static bool EhTenant { get { return TemPapel("Tenant"); } }
+        public static bool EhGerente { get { return TemPapel("Gerente"); } }
+        public static bool EhOwner { get { return TemPapel("Owner"); } }
+
+        /// <summary>
+        /// Permissões efetivas, não apenas o papel exibido na sessão. A API continua
+        /// validando cada operação; estas propriedades só controlam a experiência local.
+        /// </summary>
+        public static bool PodeAdministrarGerentes { get { return EhOwner || EhTenant; } }
+        public static bool PodeAdministrarEmpresa { get { return EhOwner || EhTenant || EhGerente; } }
+
+        private static bool TemPapel(string papel)
+        {
+            return string.Equals(Papel, papel, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(PapelReal, papel, StringComparison.OrdinalIgnoreCase);
+        }
         public static string EmpresaSelecionadaId { get { return HttpContext.Current.Session[ChaveEmpresaSelecionada] as string; } }
         public static void SelecionarEmpresa(string empresaId) { HttpContext.Current.Session[ChaveEmpresaSelecionada] = empresaId; }
         public static void DefinirAviso(string mensagem) { HttpContext.Current.Session[ChaveAviso] = mensagem; }

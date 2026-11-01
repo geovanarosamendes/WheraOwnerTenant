@@ -5,14 +5,14 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Entrar | Whera Tenant</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" />
-    <link runat="server" href="~/CSS/site.css" rel="stylesheet" type="text/css" />
+    <title>Entrar | Elo Gestão</title>
+    <link runat="server" href="~/CSS/site.css?v=8" rel="stylesheet" type="text/css" />
 </head>
-<body class="pagina-login">
+<body class="pagina-login" data-visual-context="management">
     <form id="formLogin" runat="server">
         <div class="caixa-login">
-            <h1>Whera Tenant</h1>
+            <div class="login-marca"><img class="login-logo" src='<%= ResolveUrl("~/Images/elo-wordmark.png") %>' alt="Elo" /></div>
+            <p class="login-intro">Acesse o espaço de gestão da sua empresa.</p>
 
             <asp:Panel ID="pnlExpirou" runat="server" CssClass="aviso" Visible="false">
                 Sua sessão expirou. Entre novamente.

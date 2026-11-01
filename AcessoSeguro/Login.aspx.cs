@@ -130,7 +130,7 @@ public partial class AcessoSeguro_Login : Page
             return;
         }
 
-        AutenticacaoTenant.IniciarSessao(resposta.Sessao);
+        AutenticacaoTenant.IniciarSessao(resposta.Sessao, resposta.PapelReal);
         IrParaDestino();
     }
 

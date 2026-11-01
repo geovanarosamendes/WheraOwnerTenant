@@ -4,17 +4,53 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title><asp:ContentPlaceHolder ID="Titulo" runat="server">Whera Tenant</asp:ContentPlaceHolder></title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" />
-    <link runat="server" href='<%= ResolveUrl("~/CSS/site.css") %>' rel="stylesheet" type="text/css" />
+    <title><asp:ContentPlaceHolder ID="Titulo" runat="server">Elo Gestão</asp:ContentPlaceHolder></title>
+    <link runat="server" href="~/CSS/site.css?v=9" rel="stylesheet" type="text/css" />
 </head>
-<body>
+<body data-visual-context="management">
     <form id="formPrincipal" runat="server">
-        <header class="topo"><a class="marca" href='<%= ResolveUrl("~/Adm/Home.aspx") %>'>Whera<span>Tenant</span></a><div class="conta"><asp:Literal ID="litUsuario" runat="server" /><a runat="server" href='<%= ResolveUrl("~/AcessoSeguro/Sair.aspx") %>'>Sair</a></div></header>
+        <header class="topo"><a class="marca" href='<%= ResolveUrl("~/Adm/Home.aspx") %>' aria-label="Elo Gestão — início"><img class="marca-logo" src='<%= ResolveUrl("~/Images/elo-wordmark.png") %>' alt="Elo" /><span class="marca-contexto">Gestão</span></a><div class="conta"><asp:Literal ID="litUsuario" runat="server" /><a href='<%= ResolveUrl("~/AcessoSeguro/Sair.aspx") %>'>Sair</a></div></header>
         <div class="corpo">
-            <nav class="menu"><span class="menu-titulo">PAINEL DO TENANT</span><a class="<%= Ativo("Home.aspx") %>" href='<%= ResolveUrl("~/Adm/Home.aspx") %>'>Visão geral</a><a class="<%= Ativo("MinhaEmpresa.aspx") %>" href='<%= ResolveUrl("~/Adm/MinhaEmpresa.aspx") %>'>Minha empresa</a><a class="<%= Ativo("Previa.aspx") %>" href='<%= ResolveUrl("~/Adm/Previa.aspx") %>'>Prévia pública</a><a class="<%= Ativo("Imagens.aspx") %>" href='<%= ResolveUrl("~/Adm/Imagens.aspx") %>'>Imagens</a><a class="<%= Ativo("Catalogo.aspx") %>" href='<%= ResolveUrl("~/Adm/Catalogo.aspx") %>'>Catálogo</a><a class="<%= Ativo("Horarios.aspx") %>" href='<%= ResolveUrl("~/Adm/Horarios.aspx") %>'>Horários</a><a class="<%= Ativo("Atendentes.aspx") %>" href='<%= ResolveUrl("~/Adm/Atendentes.aspx") %>'>Atendentes</a><a class="<%= Ativo("Conteudos.aspx") %>" href='<%= ResolveUrl("~/Adm/Conteudos.aspx") %>'>Publicações</a><% if (WheraOwnerTenant.SessaoTenant.EhTenant) { %><a class="<%= Ativo("Gerentes.aspx") %>" href='<%= ResolveUrl("~/Adm/Gerentes.aspx") %>'>Usuários e acesso</a><% } %><a class="<%= Ativo("RedesSociais.aspx") %>" href='<%= ResolveUrl("~/Adm/RedesSociais.aspx") %>'>Redes sociais</a><a class="<%= Ativo("Relatorios.aspx") %>" href='<%= ResolveUrl("~/Adm/Relatorios.aspx") %>'>Relatórios</a><a class="<%= Ativo("Configuracoes.aspx") %>" href='<%= ResolveUrl("~/Adm/Configuracoes.aspx") %>'>Configurações</a></nav>
+            <nav id="menuPrincipal" class="menu" aria-label="Navegação principal">
+                <button id="btnMenu" class="menu-toggle" type="button" aria-controls="menuPrincipal" aria-expanded="true"><svg class="menu-toggle-icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg><span class="menu-toggle-texto">Recolher menu</span></button>
+                <span class="menu-titulo">PAINEL DO TENANT</span>
+                <a class="<%= Ativo("Home.aspx") %>" href='<%= ResolveUrl("~/Adm/Home.aspx") %>' title="Visão geral"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 11 8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" /></svg><span class="menu-texto">Visão geral</span></a>
+                <a class="<%= Ativo("MinhaEmpresa.aspx") %>" href='<%= ResolveUrl("~/Adm/MinhaEmpresa.aspx") %>' title="Minha empresa"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V8l8-4 8 4v12M8 20v-5h8v5M9 9h.01M15 9h.01" /></svg><span class="menu-texto">Minha empresa</span></a>
+                <a class="<%= Ativo("Previa.aspx") %>" href='<%= ResolveUrl("~/Adm/Previa.aspx") %>' title="Prévia pública"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" /><circle cx="12" cy="12" r="2.5" /></svg><span class="menu-texto">Prévia pública</span></a>
+                <a class="<%= Ativo("Imagens.aspx") %>" href='<%= ResolveUrl("~/Adm/Imagens.aspx") %>' title="Imagens"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8" cy="9" r="1.5" /><path d="m4 17 5-5 3 3 2-2 6 5" /></svg><span class="menu-texto">Imagens</span></a>
+                <a class="<%= Ativo("Catalogo.aspx") %>" href='<%= ResolveUrl("~/Adm/Catalogo.aspx") %>' title="Catálogo"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21zM4 5.5v15M8 7h8M8 11h8" /></svg><span class="menu-texto">Catálogo</span></a>
+                <a class="<%= Ativo("Produtos.aspx") %>" href='<%= ResolveUrl("~/Adm/Produtos.aspx") %>' title="Produtos"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9zM4 7.5l8 4.5 8-4.5M12 12v9" /></svg><span class="menu-texto">Produtos</span></a>
+                <a class="<%= Ativo("Horarios.aspx") %>" href='<%= ResolveUrl("~/Adm/Horarios.aspx") %>' title="Horários"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" /><path d="M12 7v5l3 2" /></svg><span class="menu-texto">Horários</span></a>
+                <a class="<%= Ativo("Atendentes.aspx") %>" href='<%= ResolveUrl("~/Adm/Atendentes.aspx") %>' title="Atendentes"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3" /><path d="M3.5 19a5.5 5.5 0 0 1 11 0M16 11a2.5 2.5 0 1 0 0-5M16 14a4.5 4.5 0 0 1 4.5 5" /></svg><span class="menu-texto">Atendentes</span></a>
+                <a class="<%= Ativo("Conteudos.aspx") %>" href='<%= ResolveUrl("~/Adm/Conteudos.aspx") %>' title="Publicações"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14a1 1 0 0 1 1 1v14H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /><path d="M7 8h9M7 12h9M7 16h5" /></svg><span class="menu-texto">Publicações</span></a>
+                <% if (WheraOwnerTenant.SessaoTenant.PodeAdministrarGerentes) { %><a class="<%= Ativo("Gerentes.aspx") %>" href='<%= ResolveUrl("~/Adm/Gerentes.aspx") %>' title="Usuários e acesso"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3" /><path d="M3.5 19a5.5 5.5 0 0 1 11 0M16 8h5M18.5 5.5v5" /></svg><span class="menu-texto">Usuários e acesso</span></a><% } %>
+                <a class="<%= Ativo("RedesSociais.aspx") %>" href='<%= ResolveUrl("~/Adm/RedesSociais.aspx") %>' title="Redes sociais"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="6" r="2.5" /><circle cx="18" cy="18" r="2.5" /><path d="m8.2 11 7.6-4M8.2 13l7.6 4" /></svg><span class="menu-texto">Redes sociais</span></a>
+                <a class="<%= Ativo("Relatorios.aspx") %>" href='<%= ResolveUrl("~/Adm/Relatorios.aspx") %>' title="Relatórios"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7" /></svg><span class="menu-texto">Relatórios</span></a>
+                <a class="<%= Ativo("Configuracoes.aspx") %>" href='<%= ResolveUrl("~/Adm/Configuracoes.aspx") %>' title="Configurações"><svg class="menu-icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z" /><path d="m19.4 15 .1.1-1.5 2.6-.2-.1a2 2 0 0 0-3 .9v.2h-3v-.2a2 2 0 0 0-3-1l-.2.1-1.5-2.6.1-.1a2 2 0 0 0-1.5-2.6h-.2v-3h.2a2 2 0 0 0 1.5-2.6l-.1-.1 1.5-2.6.2.1a2 2 0 0 0 3-.9v-.2h3v.2a2 2 0 0 0 3 1l.2-.1 1.5 2.6-.1.1a2 2 0 0 0 1.5 2.6h.2v3h-.2a2 2 0 0 0-1.5 2.6Z" /></svg><span class="menu-texto">Configurações</span></a>
+            </nav>
             <main class="conteudo"><asp:ContentPlaceHolder ID="Conteudo" runat="server" /></main>
         </div>
     </form>
+    <script>
+        (function () {
+            var body = document.body;
+            var menu = document.getElementById('menuPrincipal');
+            var button = document.getElementById('btnMenu');
+            if (!menu || !button) return;
+            var compact = window.localStorage.getItem('whera.menu.compacto') === '1';
+            function render() {
+                body.classList.toggle('menu-recolhido', compact);
+                button.setAttribute('aria-expanded', compact ? 'false' : 'true');
+                var label = button.querySelector('.menu-toggle-texto');
+                if (label) label.textContent = compact ? 'Expandir menu' : 'Recolher menu';
+            }
+            button.addEventListener('click', function () {
+                compact = !compact;
+                window.localStorage.setItem('whera.menu.compacto', compact ? '1' : '0');
+                render();
+            });
+            render();
+        }());
+    </script>
 </body>
 </html>

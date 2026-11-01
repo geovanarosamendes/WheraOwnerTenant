@@ -1,5 +1,5 @@
 <%@ Page Language="C#" MasterPageFile="~/Adm/MasterPage.master" AutoEventWireup="true" CodeFile="Gerentes.aspx.cs" Inherits="Adm_Gerentes" %>
-<asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Usuários e acesso | Whera Tenant</asp:Content>
+<asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Usuários e acesso | Elo Gestão</asp:Content>
 <asp:Content ID="CorpoPagina" ContentPlaceHolderID="Conteudo" runat="server">
     <div class="cabecalho-pagina"><div><span class="sobretitulo">CONFIGURAÇÕES</span><h1>Usuários e acesso</h1><p>Gerencie as pessoas autorizadas a operar a empresa.</p></div></div>
     <asp:Panel ID="pnlErro" runat="server" CssClass="erro" Visible="false"><asp:Literal ID="litErro" runat="server" /></asp:Panel>

@@ -1,5 +1,5 @@
 <%@ Page Language="C#" MasterPageFile="~/Adm/MasterPage.master" AutoEventWireup="true" CodeFile="Conteudos.aspx.cs" Inherits="Adm_Conteudos" %>
-<asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Publicações | Whera Tenant</asp:Content>
+<asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Publicações | Elo Gestão</asp:Content>
 <asp:Content ID="CorpoPagina" ContentPlaceHolderID="Conteudo" runat="server">
     <div class="cabecalho-pagina"><div><span class="sobretitulo">PRESENÇA DIGITAL</span><h1>Publicações</h1><p>Crie Stories e promoções que aparecem no perfil da sua empresa.</p></div></div>
     <asp:Panel ID="pnlErro" runat="server" CssClass="erro" Visible="false"><asp:Literal ID="litErro" runat="server" /></asp:Panel><asp:Panel ID="pnlSucesso" runat="server" CssClass="sucesso-msg" Visible="false"><asp:Literal ID="litSucesso" runat="server" /></asp:Panel>

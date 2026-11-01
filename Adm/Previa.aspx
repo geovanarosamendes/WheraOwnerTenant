@@ -1,5 +1,5 @@
 <%@ Page Language="C#" MasterPageFile="~/Adm/MasterPage.master" AutoEventWireup="true" CodeFile="Previa.aspx.cs" Inherits="Adm_Previa" %>
-<asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Prévia pública | Whera Tenant</asp:Content>
+<asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Prévia pública | Elo Gestão</asp:Content>
 <asp:Content ID="CorpoPagina" ContentPlaceHolderID="Conteudo" runat="server">
     <div class="cabecalho-pagina"><div><span class="sobretitulo">MINHA EMPRESA</span><h1>Prévia pública</h1><p>Confira como os dados já cadastrados podem aparecer no perfil da empresa.</p></div><a runat="server" class="botao botao-secundario" href="~/Adm/MinhaEmpresa.aspx">Editar perfil</a></div>
     <asp:Panel ID="pnlErro" runat="server" CssClass="erro" Visible="false"><asp:Literal ID="litErro" runat="server" /></asp:Panel>

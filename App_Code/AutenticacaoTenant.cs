@@ -21,6 +21,8 @@ namespace WheraOwnerTenant
         public string ExpiraEm { get; set; }
         public UsuarioResposta Usuario { get; set; }
         public string Papel { get; set; }
+        /// <summary>Compatibilidade com APIs que repetem o papel real dentro da sessão.</summary>
+        public string PapelReal { get; set; }
     }
 
     public class UsuarioResposta
@@ -91,7 +93,7 @@ namespace WheraOwnerTenant
         }
 
         /// <summary>Grava a sessão do site a partir da resposta "Concluido" da API.</summary>
-        public static void IniciarSessao(SessaoResposta sessao)
+        public static void IniciarSessao(SessaoResposta sessao, string papelReal = null)
         {
             DateTime expiraEm = DateTime.Parse(sessao.ExpiraEm, CultureInfo.InvariantCulture,
                 DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal);
@@ -99,7 +101,7 @@ namespace WheraOwnerTenant
             SessaoTenant.Iniciar(sessao.AccessToken, expiraEm,
                 sessao.Usuario != null ? sessao.Usuario.Nome : null,
                 sessao.Usuario != null ? sessao.Usuario.Email : null,
-                sessao.Papel);
+                sessao.Papel, string.IsNullOrWhiteSpace(papelReal) ? sessao.PapelReal : papelReal);
         }
 
         /// <summary>Mensagem para a tela a partir do erro da API.</summary>

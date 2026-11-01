@@ -1,5 +1,5 @@
 <%@ Page Language="C#" MasterPageFile="~/Adm/MasterPage.master" AutoEventWireup="true" CodeFile="MinhaEmpresa.aspx.cs" Inherits="Adm_MinhaEmpresa" %>
-<asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Minha empresa | Whera Tenant</asp:Content>
+<asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Minha empresa | Elo Gestão</asp:Content>
 <asp:Content ID="CorpoPagina" ContentPlaceHolderID="Conteudo" runat="server">
     <div class="cabecalho-pagina"><div><span class="sobretitulo">MINHA EMPRESA</span><h1>Perfil da empresa</h1><p>Atualize as informações que aparecem no perfil público do Whera.</p></div></div>
     <asp:Panel ID="pnlErro" runat="server" CssClass="erro" Visible="false"><asp:Literal ID="litErro" runat="server" /></asp:Panel>

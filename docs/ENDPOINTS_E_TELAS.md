@@ -10,13 +10,14 @@ O nome ERA da especificação foi interpretado como Whera, conforme o contexto d
 | Cadastro inicial | — | Removido deste painel; realizado no `centro_comecial` |
 | Vínculo Tenant | — | Removido deste painel; o fluxo de cadastro e vínculo é iniciado no `centro_comecial` |
 | Dashboard / empresa atual | `GET /api/perfis/minha-empresa` | Pronto |
+| Seletor de empresas do Owner | `GET /api/administracao/empresas` | Pronto; somente Owner |
 | Perfil da empresa | `PUT /api/empresas/{id}/perfil` | Pronto |
 | Imagens do perfil | `POST /api/empresas/{id}/imagens` | Pronto |
 | Canais | `GET/POST/PUT/DELETE /api/empresas/{id}/canais` | Pronto via perfil; CRUD de canais disponível |
 | Horários | `GET /api/empresas/{id}/horarios`, `PUT /api/empresas/{id}/horarios/semana` | Pronto |
 | Catálogo | `POST /api/empresas/{id}/imagens` + `PUT /api/empresas/{id}/perfil` | Pronto |
 | Atendentes | `GET/POST/PUT/DELETE /api/empresas/{id}/atendentes`, `PUT .../atendentes/ordem` | Pronto |
-| Usuários e acesso | `GET/POST/DELETE /api/empresas/{id}/gerentes` | Pronto para Tenant |
+| Usuários e acesso | `GET/POST/DELETE /api/empresas/{id}/gerentes` | Pronto para Owner e Tenant; Gerente comum não administra gerentes |
 | Publicações | `GET/PUT /api/empresas/{id}/conteudos` | Pronto |
 | Mídia de publicação | `POST /api/empresas/{id}/conteudos/midias` | Endpoint confirmado; editor de mídia avançada fica incremental |
 | Redes sociais | `/api/tenant/.../social/*` | Bloqueado: não existe nos controllers atuais |
