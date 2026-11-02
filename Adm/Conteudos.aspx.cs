@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Web;
-using System.IO;
 using WheraOwnerTenant;
 
+/// <summary>Histórico somente leitura: o que está no ar e o que já passou.</summary>
 public partial class Adm_Conteudos : PaginaTenant
 {
-    private const string ChaveEmpresa = "WheraOwnerTenant.Conteudos.Empresa";
-    protected void Page_Load(object sender, EventArgs e) { if (!IsPostBack) Carregar(); else AlternarTipo(); }
+    private DateTime agora;
+
+    protected void Page_Load(object sender, EventArgs e) { if (!IsPostBack) Carregar(); }
+    protected void ddlTipo_SelectedIndexChanged(object sender, EventArgs e) { Carregar(); }
 
     private void Carregar()
     {
@@ -17,49 +18,32 @@ public partial class Adm_Conteudos : PaginaTenant
         {
             var empresa = TenantApi.MinhaEmpresa(Api);
             if (empresa == null) { pnlSemEmpresa.Visible = true; return; }
-            Session[ChaveEmpresa] = empresa; pnlConteudo.Visible = true; AlternarTipo(); Bind();
+            var dados = PublicacoesTenant.Carregar(Api, empresa.Id);
+            agora = dados.AgoraUtc;
+            var ativas = dados.Itens.Where(x => x.Situacao == Publicacao.Ativa).OrderBy(x => x.FimUtc).ToList();
+            var programadas = dados.Itens.Where(x => x.Situacao == Publicacao.Programada).OrderBy(x => x.InicioUtc).ToList();
+            var passadas = dados.Itens.Where(x => x.Situacao == Publicacao.Encerrada || x.Situacao == Publicacao.Suspensa).ToList();
+            var publicadas = dados.Itens.Where(x => x.FoiPublicada).ToList();
+
+            litAtivas.Text = ativas.Count.ToString();
+            litProgramadas.Text = programadas.Count.ToString();
+            litPassadas.Text = passadas.Count.ToString();
+            litStories.Text = publicadas.Count(x => x.Tipo == "Story").ToString();
+            litPromocoes.Text = publicadas.Count(x => x.Tipo == "Promocao").ToString();
+
+            rptAtivas.DataSource = ativas; rptAtivas.DataBind(); rptAtivas.Visible = ativas.Count > 0; pnlSemAtivas.Visible = ativas.Count == 0;
+            rptProgramadas.DataSource = programadas; rptProgramadas.DataBind(); pnlProgramadas.Visible = programadas.Count > 0;
+            var filtradas = string.IsNullOrEmpty(ddlTipo.SelectedValue) ? passadas : passadas.Where(x => x.Tipo == ddlTipo.SelectedValue).ToList();
+            rptPassadas.DataSource = filtradas; rptPassadas.DataBind(); rptPassadas.Visible = filtradas.Count > 0; pnlSemPassadas.Visible = filtradas.Count == 0;
+            pnlConteudo.Visible = true;
         }
-        catch (WheraApiException ex) { Erro(ex); }
-    }
-
-    private void Bind()
-    {
-        var empresa = Session[ChaveEmpresa] as PerfilEmpresa; if (empresa == null) return;
-        var lista = TenantApi.ListarConteudos(Api, empresa.Id, ddlTipo.SelectedValue);
-        rptConteudos.DataSource = lista == null ? new List<ConteudoTenant>() : lista.Itens ?? new List<ConteudoTenant>(); rptConteudos.DataBind();
-        pnlVazio.Visible = lista == null || lista.Itens == null || lista.Itens.Count == 0;
-    }
-
-    protected void ddlTipo_SelectedIndexChanged(object sender, EventArgs e) { AlternarTipo(); Bind(); }
-    private void AlternarTipo() { pnlStory.Visible = ddlTipo.SelectedValue == "Story"; pnlPromocao.Visible = !pnlStory.Visible; }
-
-    protected void btnSalvar_Click(object sender, EventArgs e) { Salvar("Salvar"); }
-    protected void btnPublicar_Click(object sender, EventArgs e) { Salvar("Publicar"); }
-
-    private void Salvar(string acao)
-    {
-        var empresa = Session[ChaveEmpresa] as PerfilEmpresa; if (empresa == null) { Carregar(); return; }
-        if (string.IsNullOrWhiteSpace(txtTitulo.Text)) { MostrarTexto("Informe um título."); return; }
-        try
+        catch (WheraApiException ex)
         {
-            decimal preco; decimal? valor = decimal.TryParse(txtPreco.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out preco) ? (decimal?)preco : null;
-            DateTime inicio; DateTime fim; DateTime? inicioUtc = DateTime.TryParse(txtInicio.Text, out inicio) ? (DateTime?)inicio.ToUniversalTime() : null; DateTime? fimUtc = DateTime.TryParse(txtFim.Text, out fim) ? (DateTime?)fim.ToUniversalTime() : null;
-            string midiaCaminho = null, midiaTipo = null;
-            if (fuMidia.HasFile)
-            {
-                using (var stream = fuMidia.PostedFile.InputStream)
-                using (var memory = new MemoryStream()) { stream.CopyTo(memory); var enviada = TenantApi.EnviarMidia(Api, empresa.Id, Path.GetFileName(fuMidia.FileName), fuMidia.PostedFile.ContentType, memory.ToArray()); midiaCaminho = enviada.Caminho; midiaTipo = enviada.Tipo; }
-            }
-            if (acao == "Publicar") { MostrarTexto("A publicação depende da aprovação da plataforma. Salve o conteúdo como rascunho e aguarde a validação do Owner."); return; }
-            var id = Guid.NewGuid().ToString();
-            TenantApi.SalvarConteudo(Api, empresa.Id, id, new { Tipo = ddlTipo.SelectedValue, Acao = acao, Versao = 0, Titulo = txtTitulo.Text.Trim(), Descricao = txtDescricao.Text.Trim(), Condicoes = txtCondicoes.Text.Trim(), Preco = valor, MidiaCaminho = midiaCaminho, MidiaTipo = midiaTipo, Destino = txtDestino.Text.Trim(), DuracaoDias = int.Parse(ddlDuracao.SelectedValue), InicioEm = inicioUtc, FimEm = fimUtc });
-            litSucesso.Text = acao == "Publicar" ? "Conteúdo publicado." : "Rascunho salvo."; pnlSucesso.Visible = true; Limpar(); Bind();
+            if (ex.StatusCode == 401) { TratarSessaoRecusada(ex); return; }
+            pnlErro.Visible = true;
+            litErro.Text = HttpUtility.HtmlEncode(ex.StatusCode == 403 ? "Você não tem permissão para ver as publicações desta empresa." : ex.Message);
         }
-        catch (WheraApiException ex) { Erro(ex); }
     }
 
-    private void Limpar() { txtTitulo.Text = ""; txtDescricao.Text = ""; txtDestino.Text = ""; txtPreco.Text = ""; txtCondicoes.Text = ""; txtInicio.Text = ""; txtFim.Text = ""; }
-    protected string Data(object valor) { DateTime data; return DateTime.TryParse(Convert.ToString(valor), out data) ? data.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "-"; }
-    private void Erro(WheraApiException ex) { if (ex.StatusCode == 401) { TratarSessaoRecusada(ex); return; } MostrarTexto(ex.StatusCode == 403 ? "Você não tem permissão para administrar conteúdos desta empresa." : ex.Message); }
-    private void MostrarTexto(string texto) { pnlErro.Visible = true; litErro.Text = HttpUtility.HtmlEncode(texto); }
+    protected string Linha(object item) { return PublicacoesTenant.LinhaHtml((Publicacao)item, agora); }
 }

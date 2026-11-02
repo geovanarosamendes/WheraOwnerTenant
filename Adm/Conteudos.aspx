@@ -1,11 +1,34 @@
-<%@ Page Language="C#" MasterPageFile="~/Adm/MasterPage.master" AutoEventWireup="true" CodeFile="Conteudos.aspx.cs" Inherits="Adm_Conteudos" %>
-<asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Publicações | Whera Tenant</asp:Content>
+﻿<%@ Page Language="C#" MasterPageFile="~/Adm/MasterPage.master" AutoEventWireup="true" CodeFile="Conteudos.aspx.cs" Inherits="Adm_Conteudos" %>
+<asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Histórico de publicações | Elo Gestão</asp:Content>
 <asp:Content ID="CorpoPagina" ContentPlaceHolderID="Conteudo" runat="server">
-    <div class="cabecalho-pagina"><div><span class="sobretitulo">PRESENÇA DIGITAL</span><h1>Publicações</h1><p>Crie Stories e promoções que aparecem no perfil da sua empresa.</p></div></div>
-    <asp:Panel ID="pnlErro" runat="server" CssClass="erro" Visible="false"><asp:Literal ID="litErro" runat="server" /></asp:Panel><asp:Panel ID="pnlSucesso" runat="server" CssClass="sucesso-msg" Visible="false"><asp:Literal ID="litSucesso" runat="server" /></asp:Panel>
-    <asp:Panel ID="pnlSemEmpresa" runat="server" CssClass="painel" Visible="false"><h2>Nenhuma empresa vinculada</h2><p>Não há uma empresa autorizada para publicar conteúdo.</p></asp:Panel>
+    <div class="cabecalho"><div><h1>Histórico de publicações</h1><p>Stories e promoções da sua empresa. Para publicar, use o aplicativo Elo.</p></div></div>
+    <nav class="abas" aria-label="Relatório de publicações"><a runat="server" class="aba" href="~/Adm/PublicacoesDashboard.aspx">Painel</a><a runat="server" class="aba ativa" aria-current="page" href="~/Adm/Conteudos.aspx">Histórico</a><a runat="server" class="aba" href="~/Adm/PublicacoesRelatorios.aspx">Exportar</a></nav>
+    <asp:Panel ID="pnlErro" runat="server" CssClass="alerta alerta-erro" role="alert" Visible="false"><asp:Literal ID="litErro" runat="server" /></asp:Panel>
+    <asp:Panel ID="pnlSemEmpresa" runat="server" CssClass="vazio" Visible="false"><h2>Nenhuma empresa vinculada a esta conta</h2><p>Peça ao dono da empresa para adicionar seu e-mail como gerente.</p></asp:Panel>
     <asp:Panel ID="pnlConteudo" runat="server" Visible="false">
-        <div class="painel"><div class="painel-cabecalho"><h2>Novo conteúdo</h2><p>Salvar rascunho não publica nada. A publicação exige uma mídia válida.</p></div><div class="grade-form"><label class="campo"><span>Tipo</span><asp:DropDownList ID="ddlTipo" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlTipo_SelectedIndexChanged"><asp:ListItem Text="Story" Value="Story" /><asp:ListItem Text="Promoção" Value="Promocao" /></asp:DropDownList></label><label class="campo"><span>Título <sup>*</sup></span><asp:TextBox ID="txtTitulo" runat="server" MaxLength="160" /></label><label class="campo campo-largo"><span>Descrição</span><asp:TextBox ID="txtDescricao" runat="server" TextMode="MultiLine" Rows="3" MaxLength="2000" /></label><label class="campo campo-largo"><span>Imagem ou vídeo</span><asp:FileUpload ID="fuMidia" runat="server" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" /><small>Imagem até 5 MB; vídeo até 50 MB.</small></label><label class="campo"><span>Link de destino</span><asp:TextBox ID="txtDestino" runat="server" TextMode="Url" MaxLength="500" placeholder="https://" /></label><asp:Panel ID="pnlStory" runat="server"><label class="campo"><span>Duração</span><asp:DropDownList ID="ddlDuracao" runat="server"><asp:ListItem Text="24 horas" Value="1" /><asp:ListItem Text="3 dias" Value="3" /><asp:ListItem Text="5 dias" Value="5" /><asp:ListItem Text="7 dias" Value="7" /></asp:DropDownList></label></asp:Panel><asp:Panel ID="pnlPromocao" runat="server" Visible="false"><label class="campo"><span>Preço</span><asp:TextBox ID="txtPreco" runat="server" TextMode="Number" /></label><label class="campo campo-largo"><span>Condições</span><asp:TextBox ID="txtCondicoes" runat="server" TextMode="MultiLine" Rows="2" MaxLength="2000" /></label><label class="campo"><span>Início (opcional)</span><asp:TextBox ID="txtInicio" runat="server" TextMode="DateTimeLocal" /></label><label class="campo"><span>Término (opcional)</span><asp:TextBox ID="txtFim" runat="server" TextMode="DateTimeLocal" /></label></asp:Panel></div><div class="acoes-form"><asp:Button ID="btnRascunho" runat="server" Text="Salvar rascunho" CssClass="botao-secundario" OnClick="btnSalvar_Click" /><asp:Button ID="btnPublicar" runat="server" Text="Publicar" CssClass="botao-primario" OnClick="btnPublicar_Click" /></div></div>
-        <div class="painel"><div class="painel-cabecalho"><h2>Histórico</h2><p>Conteúdos salvos pela empresa, inclusive encerrados.</p></div><asp:Repeater ID="rptConteudos" runat="server"><HeaderTemplate><div class="tabela-rolagem"><table class="tabela"><thead><tr><th>Tipo</th><th>Título</th><th>Status</th><th>Atualizado</th></tr></thead><tbody></HeaderTemplate><ItemTemplate><tr><td><%# HttpUtility.HtmlEncode(Eval("Tipo")) %></td><td><strong><%# HttpUtility.HtmlEncode(Eval("Titulo")) %></strong></td><td><%# HttpUtility.HtmlEncode(Eval("Estado")) %></td><td><%# Data(Eval("CriadoEm")) %></td></tr></ItemTemplate><FooterTemplate></tbody></table></div></FooterTemplate></asp:Repeater><asp:Panel ID="pnlVazio" runat="server" CssClass="tabela-vazia" Visible="false">Nenhum conteúdo cadastrado.</asp:Panel></div>
+        <dl class="resumo">
+            <div><dt>Ativas agora</dt><dd><asp:Literal ID="litAtivas" runat="server" /></dd></div>
+            <div><dt>Programadas</dt><dd><asp:Literal ID="litProgramadas" runat="server" /></dd></div>
+            <div><dt>Passadas</dt><dd><asp:Literal ID="litPassadas" runat="server" /></dd></div>
+            <div><dt>Stories</dt><dd><asp:Literal ID="litStories" runat="server" /></dd></div>
+            <div><dt>Promoções</dt><dd><asp:Literal ID="litPromocoes" runat="server" /></dd></div>
+        </dl>
+        <section class="secao">
+            <div class="secao-cabecalho"><h2>No ar agora</h2></div>
+            <asp:Repeater ID="rptAtivas" runat="server"><HeaderTemplate><ul class="linhas"></HeaderTemplate><ItemTemplate><%# Linha(Container.DataItem) %></ItemTemplate><FooterTemplate></ul></FooterTemplate></asp:Repeater>
+            <asp:Panel ID="pnlSemAtivas" runat="server" CssClass="vazio" Visible="false"><p>Nenhuma publicação no ar neste momento. Crie uma pelo aplicativo Elo.</p></asp:Panel>
+        </section>
+        <asp:Panel ID="pnlProgramadas" runat="server" CssClass="secao" Visible="false">
+            <div class="secao-cabecalho"><h2>Programadas</h2></div>
+            <asp:Repeater ID="rptProgramadas" runat="server"><HeaderTemplate><ul class="linhas"></HeaderTemplate><ItemTemplate><%# Linha(Container.DataItem) %></ItemTemplate><FooterTemplate></ul></FooterTemplate></asp:Repeater>
+        </asp:Panel>
+        <section class="secao">
+            <div class="secao-cabecalho">
+                <h2>Publicações passadas</h2>
+                <label><span class="oculto-visual">Filtrar por tipo</span><asp:DropDownList ID="ddlTipo" runat="server" CssClass="controle controle-curto" AutoPostBack="true" OnSelectedIndexChanged="ddlTipo_SelectedIndexChanged"><asp:ListItem Text="Todos os tipos" Value="" /><asp:ListItem Text="Stories" Value="Story" /><asp:ListItem Text="Promoções" Value="Promocao" /></asp:DropDownList></label>
+            </div>
+            <asp:Repeater ID="rptPassadas" runat="server"><HeaderTemplate><ul class="linhas"></HeaderTemplate><ItemTemplate><%# Linha(Container.DataItem) %></ItemTemplate><FooterTemplate></ul></FooterTemplate></asp:Repeater>
+            <asp:Panel ID="pnlSemPassadas" runat="server" CssClass="vazio" Visible="false"><p>Nenhuma publicação passada para este filtro.</p></asp:Panel>
+        </section>
     </asp:Panel>
 </asp:Content>

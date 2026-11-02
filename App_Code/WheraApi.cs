@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
@@ -172,7 +172,7 @@ namespace WheraOwnerTenant
             {
                 var resposta = ex.Response as HttpWebResponse;
                 if (resposta == null)
-                    throw new WheraApiException(0, "API Whera indisponível: " + ex.Message, null);
+                    throw new WheraApiException(0, "Não foi possível conectar ao Elo. Tente novamente em instantes.", null);
 
                 using (resposta)
                 {
@@ -220,7 +220,7 @@ namespace WheraOwnerTenant
             catch (ArgumentException) { }
             catch (InvalidOperationException) { }
 
-            return "A API Whera recusou a solicitação (HTTP " + status + ").";
+            return "Não foi possível concluir a solicitação (erro " + status + "). Tente novamente em instantes.";
         }
 
         private class ProblemaApi

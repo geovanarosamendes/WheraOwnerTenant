@@ -12,7 +12,7 @@ public partial class Adm_Gerentes : PaginaTenant
 
     private void Carregar()
     {
-        if (!SessaoTenant.EhTenant) { MostrarTexto("A administração de gerentes é exclusiva do proprietário Tenant."); return; }
+        if (!SessaoTenant.PodeAdministrarGerentes) { MostrarTexto("A administração de gerentes é exclusiva do proprietário ou administrador da plataforma."); return; }
         try
         {
             var empresa = TenantApi.MinhaEmpresa(Api);
@@ -48,6 +48,6 @@ public partial class Adm_Gerentes : PaginaTenant
         catch (WheraApiException ex) { Erro(ex); }
     }
 
-    private void Erro(WheraApiException ex) { if (ex.StatusCode == 401) { TratarSessaoRecusada(ex); return; } MostrarTexto(ex.StatusCode == 403 ? "Apenas o proprietário pode administrar gerentes." : ex.Message); }
+    private void Erro(WheraApiException ex) { if (ex.StatusCode == 401) { TratarSessaoRecusada(ex); return; } MostrarTexto(ex.StatusCode == 403 ? "Apenas o proprietário ou administrador da plataforma pode administrar gerentes." : ex.Message); }
     private void MostrarTexto(string texto) { pnlErro.Visible = true; litErro.Text = HttpUtility.HtmlEncode(texto); }
 }

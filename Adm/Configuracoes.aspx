@@ -1,3 +1,32 @@
 <%@ Page Language="C#" MasterPageFile="~/Adm/MasterPage.master" AutoEventWireup="true" CodeFile="Configuracoes.aspx.cs" Inherits="Adm_Configuracoes" %>
-<asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Configurações | Whera Tenant</asp:Content>
-<asp:Content ID="CorpoPagina" ContentPlaceHolderID="Conteudo" runat="server"><div class="cabecalho-pagina"><div><span class="sobretitulo">CONTA E PRIVACIDADE</span><h1>Configurações</h1><p>Dados da conta, privacidade e próximos recursos.</p></div></div><asp:Panel ID="pnlErro" runat="server" CssClass="erro" Visible="false"><asp:Literal ID="litErro" runat="server" /></asp:Panel><asp:Panel ID="pnlSucesso" runat="server" CssClass="sucesso-msg" Visible="false"><asp:Literal ID="litSucesso" runat="server" /></asp:Panel><div class="painel"><div class="painel-cabecalho"><h2>Minha conta</h2><p>Dados pessoais usados na autenticação do Whera.</p></div><div class="grade-form"><label class="campo"><span>Nome</span><asp:TextBox ID="txtNome" runat="server" MaxLength="150" /></label><label class="campo"><span>E-mail</span><asp:TextBox ID="txtEmail" runat="server" TextMode="Email" MaxLength="254" /></label></div><asp:Button ID="btnSalvarConta" runat="server" Text="Salvar dados" CssClass="botao-primario" OnClick="btnSalvarConta_Click" /></div><div class="painel"><div class="painel-cabecalho"><h2>Alterar senha comum</h2><p>A senha é alterada exclusivamente pela API.</p></div><div class="grade-form"><label class="campo"><span>Senha atual</span><asp:TextBox ID="txtSenhaAtual" runat="server" TextMode="Password" /></label><label class="campo"><span>Nova senha</span><asp:TextBox ID="txtNovaSenha" runat="server" TextMode="Password" /></label></div><asp:Button ID="btnSenha" runat="server" Text="Alterar senha" CssClass="botao-secundario" OnClick="btnSenha_Click" /></div><div class="painel"><div class="painel-cabecalho"><h2>Segunda senha administrativa</h2><p>Usada para liberar a sessão Tenant. Não é a senha comum da conta pública.</p></div><div class="grade-form"><label class="campo"><span>Segunda senha atual</span><asp:TextBox ID="txtSegundaAtual" runat="server" TextMode="Password" /></label><label class="campo"><span>Nova segunda senha</span><asp:TextBox ID="txtNovaSegunda" runat="server" TextMode="Password" /></label></div><asp:Button ID="btnSegunda" runat="server" Text="Alterar segunda senha" CssClass="botao-secundario" OnClick="btnSegunda_Click" /></div><div class="painel"><h2>Usuários e permissões</h2><p>O gerenciamento de gerentes está disponível em <a runat="server" href="~/Adm/Gerentes.aspx">Usuários e acesso</a>. A API valida o papel Tenant em cada operação.</p></div><div class="painel"><h2>Integrações sociais</h2><p>Os provedores sociais, OAuth e relatórios permanecem bloqueados até que os contratos correspondentes sejam implementados no backend.</p></div><div class="painel"><h2>Privacidade</h2><p>Este painel não acessa banco de dados e não envia credenciais sociais diretamente para provedores externos. Todas as operações passam pela API Whera.</p></div></asp:Content>
+<asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Configurações | Elo Gestão</asp:Content>
+<asp:Content ID="CorpoPagina" ContentPlaceHolderID="Conteudo" runat="server">
+    <div class="cabecalho"><div><h1>Configurações</h1><p>Aparência do painel e segurança do seu acesso.</p></div></div>
+    <asp:Panel ID="pnlErro" runat="server" CssClass="alerta alerta-erro" role="alert" Visible="false"><asp:Literal ID="litErro" runat="server" /></asp:Panel>
+    <asp:Panel ID="pnlSucesso" runat="server" CssClass="alerta alerta-sucesso" role="status" Visible="false"><asp:Literal ID="litSucesso" runat="server" /></asp:Panel>
+    <section class="secao">
+        <div class="secao-cabecalho"><h2>Aparência</h2><p>Vale para este navegador.</p></div>
+        <fieldset class="opcoes-tema" id="opcoesTema">
+            <legend class="oculto-visual">Tema do painel</legend>
+            <label class="opcao-tema"><input type="radio" name="tema" value="claro" /><span class="tema-amostra tema-amostra-claro" aria-hidden="true"></span><strong>Claro</strong></label>
+            <label class="opcao-tema"><input type="radio" name="tema" value="escuro" /><span class="tema-amostra tema-amostra-escuro" aria-hidden="true"></span><strong>Escuro</strong></label>
+            <label class="opcao-tema"><input type="radio" name="tema" value="sistema" /><span class="tema-amostra tema-amostra-sistema" aria-hidden="true"></span><strong>Igual ao dispositivo</strong></label>
+        </fieldset>
+    </section>
+    <section class="secao">
+        <div class="secao-cabecalho"><h2>Senha</h2><p>A mesma senha da sua conta no aplicativo.</p></div>
+        <div class="campos">
+            <label class="campo c4"><span>Senha atual</span><asp:TextBox ID="txtSenhaAtual" runat="server" TextMode="Password" autocomplete="current-password" /></label>
+            <label class="campo c4"><span>Nova senha</span><asp:TextBox ID="txtNovaSenha" runat="server" TextMode="Password" autocomplete="new-password" /></label>
+            <div class="acoes c4"><asp:Button ID="btnSenha" runat="server" Text="Alterar senha" CssClass="botao-secundario" OnClick="btnSenha_Click" /></div>
+        </div>
+    </section>
+    <section class="secao">
+        <div class="secao-cabecalho"><h2>Segunda senha</h2><p>Pedida ao entrar na gestão. É diferente da senha da conta.</p></div>
+        <div class="campos">
+            <label class="campo c4"><span>Segunda senha atual</span><asp:TextBox ID="txtSegundaAtual" runat="server" TextMode="Password" autocomplete="off" /></label>
+            <label class="campo c4"><span>Nova segunda senha</span><asp:TextBox ID="txtNovaSegunda" runat="server" TextMode="Password" autocomplete="new-password" /></label>
+            <div class="acoes c4"><asp:Button ID="btnSegunda" runat="server" Text="Alterar segunda senha" CssClass="botao-secundario" OnClick="btnSegunda_Click" /></div>
+        </div>
+    </section>
+</asp:Content>
