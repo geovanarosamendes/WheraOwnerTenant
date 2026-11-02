@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 
 namespace WheraOwnerTenant
@@ -19,6 +20,8 @@ namespace WheraOwnerTenant
         public List<AtendentePerfil> Atendentes { get; set; }
         public ImagensPerfil Imagens { get; set; }
         public List<ItemCatalogo> Catalogo { get; set; }
+        public VitrinePerfil Vitrine { get; set; }
+        public LojaVirtualPerfil LojaVirtual { get; set; }
 
         public string Cidade
         {
@@ -26,15 +29,23 @@ namespace WheraOwnerTenant
         }
     }
 
-    public class EnderecoPerfil { public string Logradouro { get; set; } public string Numero { get; set; } public string Complemento { get; set; } public string Bairro { get; set; } public string Cidade { get; set; } public string Estado { get; set; } public string Cep { get; set; } }
+    public class EnderecoPerfil { public string Logradouro { get; set; } public string Numero { get; set; } public string Complemento { get; set; } public string Bairro { get; set; } public string Cidade { get; set; } public string Estado { get; set; } public string Cep { get; set; } public string GooglePlaceId { get; set; } }
     public class CanalPerfil { public string Id { get; set; } public string Tipo { get; set; } public string Valor { get; set; } public string Link { get; set; } public string Rotulo { get; set; } public bool Principal { get; set; } }
     public class HorarioPerfil { public string Id { get; set; } public string DiaSemana { get; set; } public string Abertura { get; set; } public string Fechamento { get; set; } }
     public class AtendentePerfil { public string Id { get; set; } public string NomePublico { get; set; } public string Funcao { get; set; } public string Telefone { get; set; } public string WhatsApp { get; set; } public string Email { get; set; } public string LinkWhatsApp { get; set; } public int Ordem { get; set; } public bool Principal { get; set; } public bool Ativo { get; set; } }
-    public class ImagensPerfil { public string Logo { get; set; } public string FotoCapa { get; set; } public string FotoFachada { get; set; } public List<string> Galeria { get; set; } }
+    public class ImagensPerfil { public string Logo { get; set; } public string FotoCapa { get; set; } public string FotoFachada { get; set; } public List<string> Galeria { get; set; } public List<EnquadramentoImagem> Enquadramentos { get; set; } }
+    /// <summary>Trecho da foto escolhido pelo gerente, em frações da imagem original.</summary>
+    public class EnquadramentoImagem { public string Url { get; set; } public double X { get; set; } public double Y { get; set; } public double Largura { get; set; } public double Altura { get; set; } }
     public class ItemCatalogo { public string Imagem { get; set; } public string Titulo { get; set; } public string Link { get; set; } }
     public class DiaFuncionamento { public string DiaSemana { get; set; } public string Nome { get; set; } public bool Fechado { get; set; } public List<IntervaloFuncionamento> Intervalos { get; set; } }
     public class IntervaloFuncionamento { public string Id { get; set; } public string Abertura { get; set; } public string Fechamento { get; set; } }
     public class SemanaFuncionamento { public List<DiaFuncionamento> Dias { get; set; } }
+    public class VitrinePerfil { public List<string> Tags { get; set; } public decimal? NotaGoogle { get; set; } public int? TotalAvaliacoesGoogle { get; set; } }
+    public class LojaVirtualPerfil { public string Id { get; set; } public string Nome { get; set; } public string Url { get; set; } }
+    public class ResumoInteracoes { public int Seguidores { get; set; } public int Favoritados { get; set; } public decimal? MediaAvaliacoesWhera { get; set; } public int TotalAvaliacoes { get; set; } public int TotalComentarios { get; set; } }
+    public class ComentarioEmpresa { public string Id { get; set; } public string UsuarioNome { get; set; } public string Texto { get; set; } public DateTime CriadoEm { get; set; } }
+    public class PaginaComentarios { public List<ComentarioEmpresa> Itens { get; set; } public int TotalItens { get; set; } }
+    public class CupomEmpresa { public string Id { get; set; } public string TipoDesconto { get; set; } public decimal Valor { get; set; } public string Titulo { get; set; } public string Publico { get; set; } public string InicioEm { get; set; } public string FimEm { get; set; } public int? LimiteResgates { get; set; } public int TotalResgates { get; set; } public string Estado { get; set; } public int? PrazoUsoMinutos { get; set; } }
     public class CategoriaResumo { public string Id { get; set; } public string Nome { get; set; } }
     public class ProprietarioResumo { public string Id { get; set; } public string Nome { get; set; } public string Email { get; set; } }
 
@@ -56,5 +67,15 @@ namespace WheraOwnerTenant
             return "Não informado";
         }
         public const string AprovadoParaConfiguracao = "AprovadoParaConfiguracao";
+
+        /// <summary>Selo de status já em HTML: o rótulo vem de uma lista fixa, não de texto do usuário.</summary>
+        public static string Selo(string status)
+        {
+            string tom = status == Publicada ? "selo-sucesso"
+                : status == AguardandoValidacao || status == AprovadoParaConfiguracao ? "selo-aviso"
+                : status == Suspensa ? "selo-erro"
+                : "selo-neutro";
+            return "<span class=\"selo " + tom + "\">" + Rotulo(status) + "</span>";
+        }
     }
 }

@@ -32,6 +32,13 @@ namespace WheraOwnerTenant
             get { return new WheraApi(SessaoTenant.Token); }
         }
 
+        /// <summary>Primeira letra do nome, para os avatares das listas.</summary>
+        protected string Inicial(object nome)
+        {
+            var texto = Convert.ToString(nome).Trim();
+            return texto.Length == 0 ? "" : HttpUtility.HtmlEncode(texto.Substring(0, 1).ToUpperInvariant());
+        }
+
         private const string ChaveAviso = "WheraOwnerTenant.Aviso";
 
         /// <summary>Guarda um aviso para a próxima tela (o que é registrado antes de um Redirect se perde).</summary>

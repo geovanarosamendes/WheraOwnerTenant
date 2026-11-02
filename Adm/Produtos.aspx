@@ -1,40 +1,41 @@
 <%@ Page Language="C#" MasterPageFile="~/Adm/MasterPage.master" AutoEventWireup="true" CodeFile="Produtos.aspx.cs" Inherits="Adm_Produtos" %>
 <asp:Content ID="TituloPagina" ContentPlaceHolderID="Titulo" runat="server">Produtos | Elo Gestão</asp:Content>
 <asp:Content ID="CorpoPagina" ContentPlaceHolderID="Conteudo" runat="server">
-  <div class="cabecalho-pagina"><div><span class="sobretitulo">MINHA EMPRESA</span><h1>Produtos</h1><p>Cadastre aqui os produtos da empresa. O gerente escolhe no aplicativo Elo quais aparecem no perfil.</p></div></div>
-  <asp:Panel ID="pnlErro" runat="server" CssClass="erro" Visible="false"><asp:Literal ID="litErro" runat="server" /></asp:Panel>
-  <asp:Panel ID="pnlSucesso" runat="server" CssClass="sucesso-msg" Visible="false"><asp:Literal ID="litSucesso" runat="server" /></asp:Panel>
-  <asp:Panel ID="pnlConteudo" runat="server" Visible="false">
-    <div class="painel">
-      <div class="painel-cabecalho"><h2><asp:Literal ID="litTituloFormulario" runat="server" Text="Novo produto" /></h2></div>
-      <asp:HiddenField ID="hidProdutoId" runat="server" />
-      <label class="campo"><span>Nome</span><asp:TextBox ID="txtNome" runat="server" MaxLength="160" /></label>
-      <label class="campo"><span>Descrição</span><asp:TextBox ID="txtDescricao" runat="server" TextMode="MultiLine" Rows="3" MaxLength="2000" /></label>
-      <label class="campo"><span>Preço (opcional)</span><asp:TextBox ID="txtPreco" runat="server" MaxLength="12" placeholder="Ex.: 29,90" /></label>
-      <label class="campo"><span>Disponibilidade</span><asp:CheckBox ID="chkDisponivel" runat="server" Text=" Disponível para venda" Checked="true" /></label>
-      <label class="campo"><span>Foto (JPG, PNG ou WebP, até 5 MB)</span><asp:FileUpload ID="fuImagem" runat="server" accept="image/jpeg,image/png,image/webp" /></label>
-      <asp:Button ID="btnSalvar" runat="server" Text="Salvar produto" CssClass="botao-primario" OnClick="btnSalvar_Click" />
-      <asp:Button ID="btnCancelar" runat="server" Text="Cancelar edição" CssClass="botao-secundario" OnClick="btnCancelar_Click" Visible="false" CausesValidation="false" />
-    </div>
-    <div class="painel">
-      <div class="painel-cabecalho"><h2>Produtos cadastrados</h2></div>
-      <asp:Panel ID="pnlVazio" runat="server" Visible="false"><p>Nenhum produto cadastrado ainda.</p></asp:Panel>
-      <div class="tabela-rolagem">
-        <asp:Repeater ID="rptProdutos" runat="server" OnItemCommand="rptProdutos_ItemCommand">
-          <HeaderTemplate><table class="tabela"><thead><tr><th>Foto</th><th>Produto</th><th>Preço</th><th>Situação</th><th>Ações</th></tr></thead><tbody></HeaderTemplate>
-          <ItemTemplate><tr>
-            <td><%# Foto((WheraOwnerTenant.ProdutoTenant)Container.DataItem) %></td>
-            <td><%# HttpUtility.HtmlEncode(Eval("Nome")) %></td>
-            <td><%# Preco((WheraOwnerTenant.ProdutoTenant)Container.DataItem) %></td>
-            <td><%# Situacao((WheraOwnerTenant.ProdutoTenant)Container.DataItem) %></td>
-            <td>
-              <asp:LinkButton runat="server" CommandName="Editar" CommandArgument='<%# Eval("Id") %>' CssClass="botao-secundario" CausesValidation="false">Editar</asp:LinkButton>
-              <asp:LinkButton runat="server" CommandName="Excluir" CommandArgument='<%# Eval("Id") %>' CssClass="botao-perigo" CausesValidation="false" OnClientClick="return confirm('Excluir este produto?');">Excluir</asp:LinkButton>
-            </td>
-          </tr></ItemTemplate>
-          <FooterTemplate></tbody></table></FooterTemplate>
-        </asp:Repeater>
-      </div>
-    </div>
-  </asp:Panel>
+    <div class="cabecalho"><div><h1>Cadastrar produto</h1><p>Depois de cadastrar, abra a galeria para colocar o produto no catálogo.</p></div></div>
+    <asp:Panel ID="pnlErro" runat="server" CssClass="alerta alerta-erro" role="alert" Visible="false"><asp:Literal ID="litErro" runat="server" /></asp:Panel>
+    <asp:Panel ID="pnlSucesso" runat="server" CssClass="alerta alerta-sucesso" role="status" Visible="false"><asp:Literal ID="litSucesso" runat="server" /></asp:Panel>
+    <asp:Panel ID="pnlConteudo" runat="server" Visible="false">
+        <section class="secao">
+            <div class="secao-cabecalho"><h2><asp:Literal ID="litTituloFormulario" runat="server" Text="Novo produto" /></h2></div>
+            <div class="campos">
+                <asp:HiddenField ID="hidProdutoId" runat="server" />
+                <label class="campo c6"><span>Nome <sup>*</sup></span><asp:TextBox ID="txtNome" runat="server" MaxLength="160" /></label>
+                <label class="campo c2"><span>Preço</span><asp:TextBox ID="txtPreco" runat="server" MaxLength="12" placeholder="29,90" /></label>
+                <label class="campo c4"><span>Foto</span><asp:FileUpload ID="fuImagem" runat="server" accept="image/jpeg,image/png,image/webp" /><small>JPG, PNG ou WebP de até 5 MB.</small></label>
+                <label class="campo"><span>Descrição</span><asp:TextBox ID="txtDescricao" runat="server" TextMode="MultiLine" Rows="2" MaxLength="2000" /></label>
+                <div class="campo-opcao c4"><asp:CheckBox ID="chkDisponivel" runat="server" Text="Ativo, disponível para venda" Checked="true" /></div>
+                <div class="acoes acoes-fim c8"><asp:Button ID="btnCancelar" runat="server" Text="Cancelar edição" CssClass="botao-secundario" OnClick="btnCancelar_Click" Visible="false" CausesValidation="false" /><asp:Button ID="btnSalvar" runat="server" Text="Salvar produto" CssClass="botao-primario" OnClick="btnSalvar_Click" /></div>
+            </div>
+        </section>
+        <section class="secao">
+            <div class="secao-cabecalho"><h2>Seus produtos</h2><a runat="server" class="botao-texto botao-pequeno" href="~/Adm/ProdutosGaleria.aspx">Abrir galeria</a></div>
+            <asp:Panel ID="pnlVazio" runat="server" CssClass="vazio" Visible="false"><p>Nenhum produto cadastrado ainda. Use o formulário acima para adicionar o primeiro.</p></asp:Panel>
+            <asp:Repeater ID="rptProdutos" runat="server" OnItemCommand="rptProdutos_ItemCommand">
+                <HeaderTemplate><div class="tabela-rolagem" tabindex="0"><table class="tabela"><thead><tr><th class="coluna-foto">Foto</th><th>Produto</th><th class="numero">Preço</th><th>Situação</th><th><span class="oculto-visual">Ações</span></th></tr></thead><tbody></HeaderTemplate>
+                <ItemTemplate>
+                    <tr>
+                        <td class="coluna-foto"><%# Foto((WheraOwnerTenant.ProdutoTenant)Container.DataItem) %></td>
+                        <td><strong><%# HttpUtility.HtmlEncode(Eval("Nome")) %></strong></td>
+                        <td class="numero"><%# Preco((WheraOwnerTenant.ProdutoTenant)Container.DataItem) %></td>
+                        <td><%# Situacao((WheraOwnerTenant.ProdutoTenant)Container.DataItem) %></td>
+                        <td><div class="linha-acoes">
+                            <asp:LinkButton runat="server" CommandName="Editar" CommandArgument='<%# Eval("Id") %>' CssClass="botao-secundario botao-pequeno" CausesValidation="false">Editar</asp:LinkButton>
+                            <asp:LinkButton runat="server" CommandName="Excluir" CommandArgument='<%# Eval("Id") %>' CssClass="botao-perigo botao-pequeno" CausesValidation="false" data-confirmar="Excluir este produto?" data-confirmar-acao="Excluir">Excluir</asp:LinkButton>
+                        </div></td>
+                    </tr>
+                </ItemTemplate>
+                <FooterTemplate></tbody></table></div></FooterTemplate>
+            </asp:Repeater>
+        </section>
+    </asp:Panel>
 </asp:Content>

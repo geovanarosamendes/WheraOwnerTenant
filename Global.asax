@@ -8,4 +8,9 @@
         System.Net.ServicePointManager.SecurityProtocol |= System.Net.SecurityProtocolType.Tls12;
     }
 
+    void Application_Error(object sender, EventArgs e)
+    {
+        WheraOwnerTenant.RegistroErros.Enviar(Server.GetLastError());
+    }
+
 </script>

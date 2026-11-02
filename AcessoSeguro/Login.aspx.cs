@@ -5,6 +5,32 @@ using WheraOwnerTenant;
 
 public partial class AcessoSeguro_Login : Page
 {
+    private const string ChaveUltimaImagem = "WheraOwnerTenant.Login.UltimaImagem";
+
+    private static readonly string[] ImagensLogin =
+    {
+        "~/Images/login/login-consultoria-loja.jpg",
+        "~/Images/login/login-empreendedor-loja.jpg",
+        "~/Images/login/login-casal-loja.jpg",
+        "~/Images/login/login-empreendedora-loja.jpg"
+    };
+
+    /// <summary>No ViewState: a imagem sorteada não muda entre as etapas do mesmo login.</summary>
+    protected string ImagemLogin
+    {
+        get { return ViewState["ImagemLogin"] as string; }
+        private set { ViewState["ImagemLogin"] = value; }
+    }
+
+    /// <summary>Sorteia ao abrir a página, sem repetir a imagem da abertura anterior.</summary>
+    private void SortearImagem()
+    {
+        var ultima = Session[ChaveUltimaImagem] as string;
+        var opcoes = Array.FindAll(ImagensLogin, x => x != ultima);
+        ImagemLogin = opcoes[new Random().Next(opcoes.Length)];
+        Session[ChaveUltimaImagem] = ImagemLogin;
+    }
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (SessaoTenant.Ativa)
@@ -12,6 +38,8 @@ public partial class AcessoSeguro_Login : Page
             IrParaDestino();
             return;
         }
+
+        if (!IsPostBack) SortearImagem();
 
         // A mensagem de erro vale só para a tentativa atual (o ViewState guardaria a visibilidade da anterior).
         pnlErro.Visible = false;
@@ -126,7 +154,7 @@ public partial class AcessoSeguro_Login : Page
             || (resposta.Sessao.Papel != AutenticacaoTenant.PapelOwner && resposta.Sessao.Papel != AutenticacaoTenant.PapelTenant && resposta.Sessao.Papel != AutenticacaoTenant.PapelGerente))
         {
             MostrarPrimeiraEtapa();
-            MostrarErro("Esta aplicação aceita apenas sessões Owner, Tenant ou Gerente autorizadas pela API Whera.");
+            MostrarErro("Esta conta não tem acesso à gestão de empresas.");
             return;
         }
 

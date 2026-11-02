@@ -28,11 +28,8 @@ public partial class Adm_MinhaEmpresa : PaginaTenant
 
     private void Preencher(PerfilEmpresa empresa)
     {
-        litNomeCabecalho.Text = HttpUtility.HtmlEncode(empresa.NomeFantasia);
-        litStatus.Text = HttpUtility.HtmlEncode(StatusEmpresa.Rotulo(empresa.Status));
-        litVersao.Text = empresa.Versao.ToString();
+        litStatus.Text = StatusEmpresa.Selo(empresa.Status);
         txtNome.Text = empresa.NomeFantasia ?? "";
-        txtSlug.Text = empresa.Slug ?? "";
         txtDescricao.Text = empresa.Descricao ?? "";
         txtSite.Text = Canal(empresa, "Site");
         txtWhatsApp.Text = Canal(empresa, "WhatsApp");
@@ -41,6 +38,7 @@ public partial class Adm_MinhaEmpresa : PaginaTenant
         txtCep.Text = endereco.Cep ?? "";
         txtLogradouro.Text = endereco.Logradouro ?? "";
         txtNumero.Text = endereco.Numero ?? "";
+        txtComplemento.Text = endereco.Complemento ?? "";
         txtBairro.Text = endereco.Bairro ?? "";
         txtCidade.Text = endereco.Cidade ?? "";
         txtEstado.Text = endereco.Estado ?? "";
@@ -59,7 +57,7 @@ public partial class Adm_MinhaEmpresa : PaginaTenant
         if (string.IsNullOrWhiteSpace(txtNome.Text)) { MostrarErroTexto("Informe o nome da empresa."); return; }
         try
         {
-            var endereco = new { Logradouro = txtLogradouro.Text.Trim(), Numero = txtNumero.Text.Trim(), Complemento = "", Bairro = txtBairro.Text.Trim(), Cidade = txtCidade.Text.Trim(), Estado = txtEstado.Text.Trim(), Cep = txtCep.Text.Trim() };
+            var endereco = new { Logradouro = txtLogradouro.Text.Trim(), Numero = txtNumero.Text.Trim(), Complemento = txtComplemento.Text.Trim(), Bairro = txtBairro.Text.Trim(), Cidade = txtCidade.Text.Trim(), Estado = txtEstado.Text.Trim(), Cep = txtCep.Text.Trim() };
             var atualizado = TenantApi.AtualizarPerfil(Api, empresa.Id, new
             {
                 NomeFantasia = txtNome.Text.Trim(), Slug = (string)null, Descricao = txtDescricao.Text.Trim(), Modalidade = (string)null,

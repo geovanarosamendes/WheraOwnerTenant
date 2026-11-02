@@ -27,6 +27,8 @@ public partial class Adm_Produtos : PaginaTenant
             Session[ChaveEmpresa] = empresa.Id;
             Listar();
             pnlConteudo.Visible = true;
+            var editar = (Session[ChaveProdutos] as List<ProdutoTenant> ?? new List<ProdutoTenant>()).FirstOrDefault(p => p.Id == Request.QueryString["editar"]);
+            if (editar != null) Preencher(editar);
         }
         catch (WheraApiException ex) { Erro(ex); }
     }
@@ -64,7 +66,7 @@ public partial class Adm_Produtos : PaginaTenant
             var disponivel = chkDisponivel.Checked;
             var id = hidProdutoId.Value;
             var atual = (Session[ChaveProdutos] as List<ProdutoTenant> ?? new List<ProdutoTenant>()).FirstOrDefault(p => p.Id == id);
-            // A escolha de aparecer no perfil é feita no aplicativo; aqui só é preservada. Produto indisponível não pode ficar publicado.
+            // A entrada no catálogo é feita na galeria ou no aplicativo; aqui só é preservada. Produto indisponível não pode ficar publicado.
             var publicado = atual != null && atual.Publicado && disponivel;
             var pedido = new { Nome = nome, Descricao = (txtDescricao.Text ?? "").Trim(), Preco = preco, Disponivel = disponivel, Publicado = publicado };
 
@@ -99,29 +101,34 @@ public partial class Adm_Produtos : PaginaTenant
 
             var produto = (Session[ChaveProdutos] as List<ProdutoTenant> ?? new List<ProdutoTenant>()).FirstOrDefault(p => p.Id == id);
             if (produto == null) { Listar(); Mostrar("Este produto não está mais disponível."); return; }
-            hidProdutoId.Value = produto.Id;
-            txtNome.Text = produto.Nome;
-            txtDescricao.Text = produto.Descricao;
-            txtPreco.Text = produto.Preco.HasValue ? produto.Preco.Value.ToString("0.00", Brasil) : "";
-            chkDisponivel.Checked = produto.Disponivel;
-            litTituloFormulario.Text = "Editar produto";
-            btnCancelar.Visible = true;
+            Preencher(produto);
         }
         catch (WheraApiException ex) { Erro(ex); }
+    }
+
+    private void Preencher(ProdutoTenant produto)
+    {
+        hidProdutoId.Value = produto.Id;
+        txtNome.Text = produto.Nome;
+        txtDescricao.Text = produto.Descricao;
+        txtPreco.Text = produto.Preco.HasValue ? produto.Preco.Value.ToString("0.00", Brasil) : "";
+        chkDisponivel.Checked = produto.Disponivel;
+        litTituloFormulario.Text = "Editar produto";
+        btnCancelar.Visible = true;
     }
 
     protected string Foto(ProdutoTenant produto)
     {
         var imagem = produto.Imagens == null ? null : produto.Imagens.OrderByDescending(i => i.Principal).FirstOrDefault();
-        return imagem == null ? "—" : "<img src=\"" + HttpUtility.HtmlAttributeEncode(WheraApi.UrlMidia(imagem.Url)) + "\" width=\"64\" alt=\"\" />";
+        return imagem == null ? "<span class=\"sem-foto\">Sem foto</span>" : "<img src=\"" + HttpUtility.HtmlAttributeEncode(WheraApi.UrlMidia(imagem.Url)) + "\" alt=\"\" />";
     }
 
-    protected string Preco(ProdutoTenant produto) { return produto.Preco.HasValue ? produto.Preco.Value.ToString("C", Brasil) : "—"; }
+    protected string Preco(ProdutoTenant produto) { return produto.Preco.HasValue ? produto.Preco.Value.ToString("C", Brasil) : "Sem preço"; }
 
     protected string Situacao(ProdutoTenant produto)
     {
-        if (!produto.Disponivel) return "Indisponível";
-        return produto.Publicado ? "Aparece no perfil" : "Aguardando seleção no app";
+        if (!produto.Disponivel) return "<span class=\"selo selo-neutro\">Inativo</span>";
+        return produto.Publicado ? "<span class=\"selo selo-sucesso\">No catálogo</span>" : "<span class=\"selo selo-aviso\">Fora do catálogo</span>";
     }
 
     private void LimparFormulario()

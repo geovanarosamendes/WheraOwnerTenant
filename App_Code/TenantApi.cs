@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -10,8 +10,16 @@ namespace WheraOwnerTenant
         public static PerfilEmpresa MinhaEmpresa(WheraApi api)
         {
             if (SessaoTenant.DevPreviewAtiva) return PreviewEmpresa();
-            if (SessaoTenant.EhOwner && !string.IsNullOrWhiteSpace(SessaoTenant.EmpresaSelecionadaId))
-                return PerfilEmpresa(api, SessaoTenant.EmpresaSelecionadaId);
+            if (!string.IsNullOrWhiteSpace(SessaoTenant.EmpresaSelecionadaId))
+            {
+                try { return PerfilEmpresa(api, SessaoTenant.EmpresaSelecionadaId); }
+                catch (WheraApiException ex)
+                {
+                    // Perdeu o acesso à empresa escolhida: volta para a empresa padrão da conta.
+                    if (ex.StatusCode != 403 && ex.StatusCode != 404) throw;
+                    SessaoTenant.SelecionarEmpresa(null);
+                }
+            }
             return api.Get<PerfilEmpresa>("api/perfis/minha-empresa");
         }
 
@@ -21,10 +29,11 @@ namespace WheraOwnerTenant
             return api.Get<PerfilEmpresa>("api/empresas/" + Uri.EscapeDataString(id) + "/perfil");
         }
 
-        public static ResultadoEmpresas ListarEmpresas(WheraApi api, string busca)
+        /// <summary>Empresas às quais a conta tem acesso. Para a sessão Owner, a API devolve todas.</summary>
+        public static AcessoTenant MeuAcesso(WheraApi api)
         {
-            if (SessaoTenant.DevPreviewAtiva) return new ResultadoEmpresas { Itens = new List<EmpresaResumoTenant> { new EmpresaResumoTenant { Id = "00000000-0000-0000-0000-000000000001", NomeFantasia = "Empresa de prévia local", Slug = "empresa-previa-local", Modalidade = "Fisica", Status = StatusEmpresa.Rascunho } }, TotalItens = 1 };
-            return api.Get<ResultadoEmpresas>("api/administracao/empresas?nomeFantasia=" + Uri.EscapeDataString(busca ?? "") + "&pagina=1&tamanhoPagina=100");
+            if (SessaoTenant.DevPreviewAtiva) return new AcessoTenant { Empresas = new List<EmpresaAcessoTenant>() };
+            return api.Get<AcessoTenant>("api/usuarios/me/acesso");
         }
 
         public static PerfilEmpresa AtualizarPerfil(WheraApi api, string id, object perfil)
@@ -55,18 +64,6 @@ namespace WheraOwnerTenant
         {
             if (SessaoTenant.DevPreviewAtiva) return new ResultadoConteudos { Itens = new List<ConteudoTenant>(), HoraServidor = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture) };
             return api.Get<ResultadoConteudos>("api/empresas/" + Uri.EscapeDataString(id) + "/conteudos?tipo=" + Uri.EscapeDataString(tipo));
-        }
-
-        public static ConteudoTenant SalvarConteudo(WheraApi api, string empresaId, string id, object request)
-        {
-            if (SessaoTenant.DevPreviewAtiva) return new ConteudoTenant { Id = id, EmpresaId = empresaId, Tipo = "Story", Titulo = "Conteúdo de prévia", Estado = "Rascunho", Versao = 1, CriadoEm = DateTime.UtcNow };
-            return api.Put<ConteudoTenant>("api/empresas/" + Uri.EscapeDataString(empresaId) + "/conteudos/" + Uri.EscapeDataString(id), request);
-        }
-
-        public static MidiaConteudo EnviarMidia(WheraApi api, string empresaId, string nome, string tipo, byte[] conteudo)
-        {
-            if (SessaoTenant.DevPreviewAtiva) return new MidiaConteudo { Caminho = "preview-local/" + nome, Tipo = "Imagem" };
-            return api.EnviarArquivo<MidiaConteudo>("api/empresas/" + Uri.EscapeDataString(empresaId) + "/conteudos/midias", "arquivo", nome, tipo, conteudo);
         }
 
         public static UsuarioTenant MeuUsuario(WheraApi api)
@@ -113,11 +110,27 @@ namespace WheraOwnerTenant
             return api.EnviarArquivoComCampo<ImagemPerfilEnviada>(Rota(empresaId, "imagens"), "arquivo", nome, tipo, conteudo, "tipo", tipoImagem);
         }
 
+        public static ResultadoImportacaoProdutos ImportarProdutos(WheraApi api, string id, string nome, string tipo, byte[] conteudo) { if (SessaoTenant.DevPreviewAtiva) return new ResultadoImportacaoProdutos { Ocorrencias = new List<OcorrenciaImportacaoProduto>() }; return api.EnviarArquivo<ResultadoImportacaoProdutos>(Rota(id, "produtos/importacao"), "arquivo", nome, tipo, conteudo); }
+
+        /// <summary>A imagem principal do produto, ou a primeira, com o endereço completo. Null quando não há foto.</summary>
+        public static string FotoPrincipal(ProdutoTenant produto)
+        {
+            if (produto.Imagens == null || produto.Imagens.Count == 0) return null;
+            var imagem = produto.Imagens.Find(i => i.Principal) ?? produto.Imagens[0];
+            return WheraApi.UrlMidia(imagem.Url);
+        }
+
         public static List<ProdutoTenant> Produtos(WheraApi api, string id) { if (SessaoTenant.DevPreviewAtiva) return new List<ProdutoTenant>(); return api.Get<List<ProdutoTenant>>(Rota(id, "produtos")) ?? new List<ProdutoTenant>(); }
         public static ProdutoTenant CriarProduto(WheraApi api, string id, object request) { if (SessaoTenant.DevPreviewAtiva) return new ProdutoTenant { Id = Guid.NewGuid().ToString(), Nome = "Produto de prévia" }; return api.Post<ProdutoTenant>(Rota(id, "produtos"), request); }
         public static ProdutoTenant AtualizarProduto(WheraApi api, string empresaId, string produtoId, object request) { if (SessaoTenant.DevPreviewAtiva) return new ProdutoTenant { Id = produtoId, Nome = "Produto de prévia" }; return api.Put<ProdutoTenant>(Rota(empresaId, "produtos") + "/" + Uri.EscapeDataString(produtoId), request); }
         public static void ExcluirProduto(WheraApi api, string empresaId, string produtoId) { if (SessaoTenant.DevPreviewAtiva) return; api.Delete(Rota(empresaId, "produtos") + "/" + Uri.EscapeDataString(produtoId)); }
         public static void EnviarImagemProduto(WheraApi api, string empresaId, string produtoId, string nome, string tipo, byte[] conteudo) { if (SessaoTenant.DevPreviewAtiva) return; api.EnviarArquivo<ProdutoImagemTenant>(Rota(empresaId, "produtos") + "/" + Uri.EscapeDataString(produtoId) + "/imagens", "arquivo", nome, tipo, conteudo); }
+
+        public static ResumoInteracoes Interacoes(WheraApi api, string id) { if (SessaoTenant.DevPreviewAtiva) return new ResumoInteracoes(); return api.Get<ResumoInteracoes>(Rota(id, "interacoes")); }
+        public static PaginaComentarios Comentarios(WheraApi api, string id, int quantidade) { if (SessaoTenant.DevPreviewAtiva) return new PaginaComentarios { Itens = new List<ComentarioEmpresa>() }; return api.Get<PaginaComentarios>(Rota(id, "comentarios") + "?pagina=1&tamanhoPagina=" + quantidade); }
+        public static List<CupomEmpresa> Cupons(WheraApi api, string id) { if (SessaoTenant.DevPreviewAtiva) return new List<CupomEmpresa>(); return api.Get<List<CupomEmpresa>>(Rota(id, "cupons")) ?? new List<CupomEmpresa>(); }
+
+        public static CupomEmpresa CriarCupom(WheraApi api, string empresaId, string cupomId, object request) { if (SessaoTenant.DevPreviewAtiva) return new CupomEmpresa { Id = cupomId }; return api.Put<CupomEmpresa>(Rota(empresaId, "cupons") + "/" + Uri.EscapeDataString(cupomId), request); }
 
         private static PerfilEmpresa PreviewEmpresa()
         {
@@ -141,6 +154,23 @@ namespace WheraOwnerTenant
         public bool Disponivel { get; set; }
         public bool Publicado { get; set; }
         public List<ProdutoImagemTenant> Imagens { get; set; }
+    }
+
+    public class ResultadoImportacaoProdutos
+    {
+        public int TotalLinhas { get; set; }
+        public int Importados { get; set; }
+        public int Ignorados { get; set; }
+        public int ComErro { get; set; }
+        public List<OcorrenciaImportacaoProduto> Ocorrencias { get; set; }
+    }
+
+    public class OcorrenciaImportacaoProduto
+    {
+        public int Linha { get; set; }
+        public string Nome { get; set; }
+        public string Situacao { get; set; }
+        public string Mensagem { get; set; }
     }
 
     public class ProdutoImagemTenant
@@ -186,12 +216,10 @@ namespace WheraOwnerTenant
         public string Estado { get; set; }
         public int Versao { get; set; }
         public DateTime? CriadoEm { get; set; }
-    }
-
-    public class MidiaConteudo
-    {
-        public string Caminho { get; set; }
-        public string Tipo { get; set; }
+        public bool Relampago { get; set; }
+        public string FundoTexto { get; set; }
+        public int? TotalVisualizacoes { get; set; }
+        public int? TotalToques { get; set; }
     }
 
     public class UsuarioTenant
@@ -201,19 +229,17 @@ namespace WheraOwnerTenant
         public string Email { get; set; }
     }
 
-    public class ResultadoEmpresas
+    public class AcessoTenant
     {
-        public List<EmpresaResumoTenant> Itens { get; set; }
-        public int TotalItens { get; set; }
+        public List<EmpresaAcessoTenant> Empresas { get; set; }
     }
 
-    public class EmpresaResumoTenant
+    public class EmpresaAcessoTenant
     {
         public string Id { get; set; }
         public string NomeFantasia { get; set; }
-        public string Slug { get; set; }
-        public string Modalidade { get; set; }
         public string Status { get; set; }
+        public string Vinculo { get; set; }
     }
 
     public class ImagemPerfilEnviada { public string Url { get; set; } }

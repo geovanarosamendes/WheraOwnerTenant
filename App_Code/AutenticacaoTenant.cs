@@ -107,7 +107,7 @@ namespace WheraOwnerTenant
         /// <summary>Mensagem para a tela a partir do erro da API.</summary>
         public static string MensagemErro(WheraApiException ex)
         {
-            if (ex.StatusCode == 0) return "Não foi possível falar com a API Whera. Tente novamente em instantes.";
+            if (ex.StatusCode == 0) return "Não foi possível conectar ao Elo. Tente novamente em instantes.";
             if (ex.StatusCode == 429) return "Muitas tentativas seguidas. Aguarde um minuto e tente de novo.";
             return ex.Message;
         }
