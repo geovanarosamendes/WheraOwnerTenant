@@ -11,6 +11,8 @@
                 <asp:HiddenField ID="hidProdutoId" runat="server" />
                 <label class="campo c6"><span>Nome <sup>*</sup></span><asp:TextBox ID="txtNome" runat="server" MaxLength="160" /></label>
                 <label class="campo c2"><span>Preço</span><asp:TextBox ID="txtPreco" runat="server" MaxLength="12" placeholder="29,90" /></label>
+                <label class="campo c3"><span>SKU</span><asp:TextBox ID="txtSku" runat="server" MaxLength="60" placeholder="Código do produto" /></label>
+                <label class="campo c3"><span>Estoque <sup>*</sup></span><asp:TextBox ID="txtEstoque" runat="server" MaxLength="7" TextMode="Number" min="0" placeholder="0" /><small>Sem estoque, o produto não vai para o catálogo.</small></label>
                 <label class="campo c4"><span>Foto</span><asp:FileUpload ID="fuImagem" runat="server" accept="image/jpeg,image/png,image/webp" /><small>JPG, PNG ou WebP de até 5 MB.</small></label>
                 <label class="campo"><span>Descrição</span><asp:TextBox ID="txtDescricao" runat="server" TextMode="MultiLine" Rows="2" MaxLength="2000" /></label>
                 <div class="campo-opcao c4"><asp:CheckBox ID="chkDisponivel" runat="server" Text="Ativo, disponível para venda" Checked="true" /></div>

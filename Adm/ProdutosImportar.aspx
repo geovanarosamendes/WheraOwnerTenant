@@ -17,7 +17,9 @@
                     <tr><td><strong>descricao</strong></td><td>Opcional, até 2000 caracteres</td><td>Fermentação natural</td></tr>
                     <tr><td><strong>preco</strong></td><td>Opcional, de 0 a 99.999.999, com até 2 casas decimais</td><td>24,90 ou 1.234,50</td></tr>
                     <tr><td><strong>disponivel</strong></td><td>Sim ou não. Vazio vale sim. Com não, o produto entra inativo</td><td>sim</td></tr>
-                    <tr><td><strong>no_catalogo</strong></td><td>Sim ou não. Vazio vale não. Com sim, disponivel não pode ser não</td><td>não</td></tr>
+                    <tr><td><strong>no_catalogo</strong></td><td>Sim ou não. Vazio vale não. Com sim, disponivel não pode ser não e o estoque precisa ser maior que zero</td><td>não</td></tr>
+                    <tr><td><strong>estoque</strong></td><td>Quantidade inteira. Sem estoque, o produto não entra no catálogo</td><td>10</td></tr>
+                    <tr><td><strong>sku</strong></td><td>Opcional. Código do produto, sem repetir</td><td>BOLO-01</td></tr>
                 </tbody>
             </table>
         </div>

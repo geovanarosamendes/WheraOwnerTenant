@@ -60,6 +60,9 @@ public partial class Adm_Produtos : PaginaTenant
                 preco = valor;
             }
 
+            int estoque;
+            if (!int.TryParse((txtEstoque.Text ?? "").Trim(), out estoque) || estoque < 0) { Mostrar("Informe a quantidade em estoque."); return; }
+
             var foto = fuImagem.HasFile ? fuImagem.PostedFile : null;
             if (foto != null && (foto.ContentLength > TamanhoMaximoFoto || !TiposFoto.Contains((foto.ContentType ?? "").ToLowerInvariant()))) { Mostrar("Envie uma foto JPG, PNG ou WebP de até 5 MB."); return; }
 
@@ -67,8 +70,8 @@ public partial class Adm_Produtos : PaginaTenant
             var id = hidProdutoId.Value;
             var atual = (Session[ChaveProdutos] as List<ProdutoTenant> ?? new List<ProdutoTenant>()).FirstOrDefault(p => p.Id == id);
             // A entrada no catálogo é feita na galeria ou no aplicativo; aqui só é preservada. Produto indisponível não pode ficar publicado.
-            var publicado = atual != null && atual.Publicado && disponivel;
-            var pedido = new { Nome = nome, Descricao = (txtDescricao.Text ?? "").Trim(), Preco = preco, Disponivel = disponivel, Publicado = publicado };
+            var publicado = atual != null && atual.Publicado && disponivel && estoque > 0;
+            var pedido = new { Nome = nome, Descricao = (txtDescricao.Text ?? "").Trim(), Preco = preco, Disponivel = disponivel, Publicado = publicado, Sku = (txtSku.Text ?? "").Trim(), Estoque = estoque };
 
             var salvo = string.IsNullOrEmpty(id) ? TenantApi.CriarProduto(Api, EmpresaId, pedido) : TenantApi.AtualizarProduto(Api, EmpresaId, id, pedido);
             if (foto != null) TenantApi.EnviarImagemProduto(Api, EmpresaId, salvo.Id, foto.FileName, foto.ContentType, fuImagem.FileBytes);
@@ -112,6 +115,8 @@ public partial class Adm_Produtos : PaginaTenant
         txtNome.Text = produto.Nome;
         txtDescricao.Text = produto.Descricao;
         txtPreco.Text = produto.Preco.HasValue ? produto.Preco.Value.ToString("0.00", Brasil) : "";
+        txtSku.Text = produto.Sku;
+        txtEstoque.Text = produto.Estoque.HasValue ? produto.Estoque.Value.ToString(CultureInfo.InvariantCulture) : "";
         chkDisponivel.Checked = produto.Disponivel;
         litTituloFormulario.Text = "Editar produto";
         btnCancelar.Visible = true;
@@ -137,6 +142,8 @@ public partial class Adm_Produtos : PaginaTenant
         txtNome.Text = "";
         txtDescricao.Text = "";
         txtPreco.Text = "";
+        txtSku.Text = "";
+        txtEstoque.Text = "";
         chkDisponivel.Checked = true;
         litTituloFormulario.Text = "Novo produto";
         btnCancelar.Visible = false;
