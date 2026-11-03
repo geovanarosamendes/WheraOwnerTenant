@@ -23,7 +23,7 @@ namespace WheraOwnerTenant
         {
             try
             {
-                string urlBase = (ConfigurationManager.AppSettings["WheraApiUrl"] ?? "").TrimEnd('/');
+                string urlBase = WheraApi.UrlBase;
                 bool previa = string.Equals(ConfigurationManager.AppSettings["WheraDevPreview"], "true", StringComparison.OrdinalIgnoreCase);
                 if (erro == null || urlBase.Length == 0 || previa) return;
 

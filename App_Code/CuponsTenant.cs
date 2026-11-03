@@ -28,9 +28,20 @@ namespace WheraOwnerTenant
             return "<span class=\"selo " + tom + "\">" + situacao + "</span>";
         }
 
-        public static string Desconto(CupomEmpresa c)
+        /// <summary>Já em HTML. Só usa rótulos fixos, para um valor inesperado da API nunca ir direto para a página.</summary>
+        public static string SeloResgate(string situacao)
         {
-            return c.TipoDesconto == "Percentual" ? c.Valor.ToString("0.##", Brasil) + "% OFF" : c.Valor.ToString("C", Brasil) + " OFF";
+            if (situacao == "Utilizado") return "<span class=\"selo selo-sucesso\">Utilizado</span>";
+            if (situacao == "Pendente") return "<span class=\"selo selo-aviso\">Aguardando uso</span>";
+            if (situacao == "Expirado") return "<span class=\"selo selo-neutro\">Expirado</span>";
+            return "<span class=\"selo selo-neutro\">Não informado</span>";
+        }
+
+        public static string Desconto(CupomEmpresa c) { return Desconto(c.TipoDesconto, c.Valor); }
+
+        public static string Desconto(string tipo, decimal valor)
+        {
+            return tipo == "Percentual" ? valor.ToString("0.##", Brasil) + "% OFF" : valor.ToString("C", Brasil) + " OFF";
         }
 
         public static string Publico(CupomEmpresa c) { return c.Publico == Vip ? "VIP, quem favorita" : "Comum, quem segue"; }

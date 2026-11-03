@@ -21,6 +21,7 @@ O nome ERA da especificação foi interpretado como Whera, conforme o contexto d
 | Publicações: histórico, dashboard e relatórios | `GET /api/empresas/{id}/conteudos?tipo=` | Pronto; somente consulta. A criação fica no aplicativo Elo |
 | Galeria e catálogo | `GET/PUT/DELETE /api/empresas/{id}/produtos` | Pronto. No catálogo = `Publicado`; inativo = `Disponivel = false`; excluir usa a exclusão lógica da API |
 | Importar produtos por planilha | `POST /api/empresas/{id}/produtos/importacao` | Pronto na API local, ainda não publicado em produção. Contrato em `API_IMPORTACAO_PRODUTOS.md`; modelos gerados por `gerar-modelo-produtos.ps1` |
+| Cupons resgatados: totais e lista de quem resgatou | `GET /api/empresas/{id}/cupons` + `GET /api/empresas/{id}/cupons/resgates?cupomId=&situacao=&pagina=&tamanhoPagina=` | Pronto; somente consulta |
 | Vitrine Elo (página compartilhável paga) | — | Bloqueado: editor, publicação e cobrança não desenvolvidos |
 | Métricas de publicação (visualizações, cliques) | — | Bloqueado: a API não registra esses dados |
 | Redes sociais | `/api/tenant/.../social/*` | Bloqueado: não existe nos controllers atuais |

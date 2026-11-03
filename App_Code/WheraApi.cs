@@ -38,9 +38,14 @@ namespace WheraOwnerTenant
             this.token = token;
         }
 
-        private static string UrlBase
+        /// <summary>A variável de ambiente WHERA_API_URL, usada só em máquinas de desenvolvimento, tem prioridade sobre o Web.config.</summary>
+        public static string UrlBase
         {
-            get { return (ConfigurationManager.AppSettings["WheraApiUrl"] ?? "").TrimEnd('/'); }
+            get
+            {
+                var local = Environment.GetEnvironmentVariable("WHERA_API_URL");
+                return (string.IsNullOrWhiteSpace(local) ? ConfigurationManager.AppSettings["WheraApiUrl"] ?? "" : local).TrimEnd('/');
+            }
         }
 
         /// <summary>Imagem servida pela própria API ("/midias/..."): completa com o endereço da API.</summary>

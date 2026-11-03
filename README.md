@@ -21,6 +21,6 @@ Abra `WheraOwnerTenant.sln` no Visual Studio 2022 com o workload de ASP.NET e .N
 
 `https://whera-api.onrender.com`
 
-Para desenvolvimento local, altere `WheraApiUrl` para `http://localhost:5128`.
+Para desenvolvimento local, não altere o `Web.config`: defina a variável de ambiente `WHERA_API_URL=http://localhost:5128` na sua máquina, em nível de usuário, e reabra o Visual Studio. Ela tem prioridade sobre `WheraApiUrl` e vale também para o WheraOwner. Para voltar a usar produção, remova a variável.
 
 As telas de tenant e seus endpoints devem ser adicionados somente depois da confirmação dos contratos disponíveis na API.

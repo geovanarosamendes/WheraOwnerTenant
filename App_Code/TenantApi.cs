@@ -130,6 +130,34 @@ namespace WheraOwnerTenant
         public static PaginaComentarios Comentarios(WheraApi api, string id, int quantidade) { if (SessaoTenant.DevPreviewAtiva) return new PaginaComentarios { Itens = new List<ComentarioEmpresa>() }; return api.Get<PaginaComentarios>(Rota(id, "comentarios") + "?pagina=1&tamanhoPagina=" + quantidade); }
         public static List<CupomEmpresa> Cupons(WheraApi api, string id) { if (SessaoTenant.DevPreviewAtiva) return new List<CupomEmpresa>(); return api.Get<List<CupomEmpresa>>(Rota(id, "cupons")) ?? new List<CupomEmpresa>(); }
 
+        /// <summary>Resgates da empresa, do mais recente para o mais antigo. cupomId e situacao vazios não filtram.</summary>
+        public static PaginaResgatesCupom ResgatesCupons(WheraApi api, string id, string cupomId, string situacao, int pagina, int tamanho)
+        {
+            if (SessaoTenant.DevPreviewAtiva) return PreviewResgates(situacao);
+            var rota = Rota(id, "cupons/resgates") + "?pagina=" + pagina + "&tamanhoPagina=" + tamanho;
+            if (!string.IsNullOrEmpty(cupomId)) rota += "&cupomId=" + Uri.EscapeDataString(cupomId);
+            if (!string.IsNullOrEmpty(situacao)) rota += "&situacao=" + Uri.EscapeDataString(situacao);
+            return api.Get<PaginaResgatesCupom>(rota) ?? new PaginaResgatesCupom { Itens = new List<ResgateCupom>() };
+        }
+
+        private static PaginaResgatesCupom PreviewResgates(string situacao)
+        {
+            var agora = DateTime.UtcNow;
+            Func<string, string, string, DateTime, DateTime?, DateTime, ResgateCupom> item = (nome, codigo, estado, resgatado, usado, expira) => new ResgateCupom
+            {
+                Id = Guid.NewGuid().ToString(), CupomId = "preview", CupomTitulo = "Cupom de prévia", Publico = "Seguidores", TipoDesconto = "Percentual", Valor = 10, Codigo = codigo, NomeCliente = nome, Situacao = estado,
+                ResgatadoEm = resgatado.ToString("o", CultureInfo.InvariantCulture), UtilizadoEm = usado.HasValue ? usado.Value.ToString("o", CultureInfo.InvariantCulture) : null, ExpiraEm = expira.ToString("o", CultureInfo.InvariantCulture)
+            };
+            var todos = new List<ResgateCupom>
+            {
+                item("Cliente de prévia 1", "PREVIA01", "Pendente", agora.AddMinutes(-20), null, agora.AddMinutes(100)),
+                item("Cliente de prévia 2", "PREVIA02", "Utilizado", agora.AddHours(-5), agora.AddHours(-4), agora.AddHours(-3)),
+                item("Cliente de prévia 3", "PREVIA03", "Expirado", agora.AddDays(-1), null, agora.AddHours(-22))
+            };
+            var itens = string.IsNullOrEmpty(situacao) ? todos : todos.FindAll(r => r.Situacao == situacao);
+            return new PaginaResgatesCupom { Itens = itens, Pagina = 1, TotalItens = itens.Count, TotalPaginas = itens.Count == 0 ? 0 : 1 };
+        }
+
         public static CupomEmpresa CriarCupom(WheraApi api, string empresaId, string cupomId, object request) { if (SessaoTenant.DevPreviewAtiva) return new CupomEmpresa { Id = cupomId }; return api.Put<CupomEmpresa>(Rota(empresaId, "cupons") + "/" + Uri.EscapeDataString(cupomId), request); }
 
         private static PerfilEmpresa PreviewEmpresa()
@@ -147,6 +175,8 @@ namespace WheraOwnerTenant
 
     public class ProdutoTenant
     {
+        public string Sku { get; set; }
+        public int? Estoque { get; set; }
         public string Id { get; set; }
         public string Nome { get; set; }
         public string Descricao { get; set; }
